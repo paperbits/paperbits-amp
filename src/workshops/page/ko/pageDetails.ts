@@ -55,7 +55,7 @@ export class PageDetailsWorkshop {
         }
 
         await this.router.navigateTo(validPermalink());
-        this.viewManager.setHost({ name: "page-host" });
+        this.viewManager.setHost({ name: "amp-page-host" });
     }
 
     private async updatePage(): Promise<void> {
@@ -73,7 +73,7 @@ export class PageDetailsWorkshop {
         await this.pageService.deletePage(this.pageItem.toContract());
 
         this.viewManager.notifySuccess("Pages", `Page "${this.pageItem.title()}" was deleted.`);
-        this.viewManager.closeWorkshop("page-details-workshop");
+        this.viewManager.closeWorkshop("amp-page-details-workshop");
 
         if (this.onDeleteCallback) {
             this.onDeleteCallback();

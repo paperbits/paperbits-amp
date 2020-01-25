@@ -19,7 +19,7 @@ export class PagesWorkshop {
     public readonly selectedPage: ko.Observable<PageItem>;
 
     constructor(
-        private readonly pageService: IPageService,
+        private readonly ampPageService: IPageService,
         private readonly router: Router,
         private readonly viewManager: ViewManager
     ) {
@@ -42,7 +42,7 @@ export class PagesWorkshop {
         this.working(true);
         this.pages([]);
 
-        const pages = await this.pageService.search(searchPattern);
+        const pages = await this.ampPageService.search(searchPattern);
         const pageItems = pages.map(page => new PageItem(page));
 
         this.pages(pageItems);
@@ -59,7 +59,6 @@ export class PagesWorkshop {
         this.working(false);
     }
 
-
     public selectPage(pageItem: PageItem): void {
         const prev = this.selectedPage();
 
@@ -71,9 +70,9 @@ export class PagesWorkshop {
         pageItem.isSelected(true);
 
         const view: View = {
-            heading: "Page",
+            heading: "AMP Page",
             component: {
-                name: "page-details-workshop",
+                name: "amp-page-details-workshop",
                 params: {
                     pageItem: pageItem,
                     onDeleteCallback: () => {
@@ -89,8 +88,8 @@ export class PagesWorkshop {
     public async addPage(): Promise<void> {
         this.working(true);
 
-        const pageUrl = "/new";
-        const pageContract = await this.pageService.createPage(pageUrl, "New page", "", "");
+        const pageUrl = "/new-amp-page";
+        const pageContract = await this.ampPageService.createPage(pageUrl, "New AMP page", "", "");
         const pageItem = new PageItem(pageContract);
 
         this.pages.push(pageItem);

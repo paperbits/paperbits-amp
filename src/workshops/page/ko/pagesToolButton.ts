@@ -12,7 +12,7 @@ export class PagesToolButton implements ToolButton {
         const view: View = {
             heading: this.title,
             helpText: "Add or edit pages of your website. Each page has a unique URL, which also automatically defines the layout it is part of.",
-            component: { name: "pages" }
+            component: { name: "amp-pages" }
         };
 
         this.viewManager.openViewAsWorkshop(view);

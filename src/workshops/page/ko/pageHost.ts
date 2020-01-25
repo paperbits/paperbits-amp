@@ -1,5 +1,5 @@
 import * as ko from "knockout";
-import { LayoutViewModelBinder, LayoutViewModel } from "../../../layout/ko";
+import { LayoutViewModelBinder, LayoutViewModel } from "@paperbits/core/layout/ko";
 import { Component, OnMounted, OnDestroyed, Param } from "@paperbits/common/ko/decorators";
 import { Router, Route } from "@paperbits/common/routing";
 import { EventManager } from "@paperbits/common/events";
@@ -8,7 +8,7 @@ import { ViewManager, ViewManagerMode } from "@paperbits/common/ui";
 
 @Component({
     selector: "amp-page-host",
-    template: "<!-- ko if: layoutViewModel --><!-- ko widget: layoutViewModel, grid: {} --><!-- /ko --><!-- /ko -->"
+    template: "<h1>AMP</h1><!-- ko if: layoutViewModel --><!-- ko widget: layoutViewModel, grid: {} --><!-- /ko --><!-- /ko -->"
 })
 export class PageHost {
     public readonly layoutViewModel: ko.Observable<LayoutViewModel>;

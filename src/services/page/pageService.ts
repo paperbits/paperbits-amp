@@ -1,14 +1,14 @@
-﻿import * as Utils from "../utils";
-import { PageContract, IPageService } from "../pages";
-import { IObjectStorage, Operator, Query } from "../persistence";
-import { IBlockService } from "../blocks";
-import { Contract } from "../contract";
+﻿import * as Utils from "@paperbits/common/utils";
+import { PageContract, IPageService } from "@paperbits/common/pages";
+import { IObjectStorage, Operator, Query } from "@paperbits/common/persistence";
+import { IBlockService } from "@paperbits/common/blocks";
+import { Contract } from "@paperbits/common/contract";
 
-const pagesPath = "pages";
+const pagesPath = "amp-pages";
 const documentsPath = "files";
 const templateBlockKey = "blocks/new-page-template";
 
-export class PageService implements IPageService {
+export class AmpPageService implements IPageService {
     constructor(
         private readonly objectStorage: IObjectStorage,
         private readonly blockService: IBlockService
