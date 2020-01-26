@@ -18,7 +18,7 @@ export class PagePublisher implements IPublisher {
         private readonly outputBlobStorage: IBlobStorage,
         private readonly htmlPagePublisher: HtmlPagePublisher,
         private readonly logger: Logger
-    ) { }
+    ) {    }
 
     public async renderPage(page: HtmlPage): Promise<string> {
         this.logger.traceEvent(`Publishing page ${page.title}...`);
