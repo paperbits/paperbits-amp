@@ -59,10 +59,13 @@ export class PageHost {
         const bindingContext = {
             navigationPath: route.path,
             routeKind: "page",
-            page: pageContentContract, // TODO: Rename "page" > "content",
-            update: "page",
-            onContentUpdate: async (updatedPostContract) => {
-                await this.pageService.updatePageContent(pageContract.key, updatedPostContract);
+            template: {
+                page: {
+                    value: pageContentContract,
+                    onValueUpdate: async (updatedPostContract) => {
+                        await this.pageService.updatePageContent(pageContract.key, updatedPostContract);
+                    }
+                }
             }
         };
 
