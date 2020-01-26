@@ -1,15 +1,15 @@
-import { PagesToolButton } from "./pagesToolButton";
+import { PagesToolButton } from "./workshops/page/ko/pagesToolButton";
 import { IInjectorModule, IInjector } from "@paperbits/common/injection";
-import { PagesWorkshop } from "./pages";
-import { PageDetailsWorkshop } from "./pageDetails";
-import { PageSelector } from "./pageSelector";
-import { PageHost } from "./pageHost";
-import { AmpPageService } from "../../../services/page";
+import { PagesWorkshop } from "./workshops/page/ko/pages";
+import { PageDetailsWorkshop } from "./workshops/page/ko/pageDetails";
+import { PageSelector } from "./workshops/page/ko/pageSelector";
+import { PageHost } from "./workshops/page/ko/pageHost";
+import { AmpPageService } from "./services/page";
 
 
 export class PageDesignModule implements IInjectorModule {
     public register(injector: IInjector): void {
-        injector.bind("pageHost", PageHost);
+        injector.bind("ampPageHost", PageHost);
         injector.bind("ampPagesWorkshop", PagesWorkshop);
         injector.bind("ampPageDetailsWorkshop", PageDetailsWorkshop);
         injector.bind("ampPageSelector", PageSelector);

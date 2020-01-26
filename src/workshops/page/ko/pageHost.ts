@@ -10,7 +10,7 @@ import { IPageService } from "@paperbits/common/pages";
 
 @Component({
     selector: "amp-page-host",
-    template: "<!-- ko if: contentViewModel --><!-- ko widget: contentViewModel, grid: {} --><!-- /ko --><!-- /ko -->"
+    template: "<h1>AMP</h1><!-- ko if: contentViewModel --><!-- ko widget: contentViewModel, grid: {} --><!-- /ko --><!-- /ko -->"
 })
 export class PageHost {
     public readonly contentViewModel: ko.Observable<ContentViewModel>;
@@ -21,7 +21,7 @@ export class PageHost {
         private readonly eventManager: EventManager,
         private readonly viewManager: ViewManager,
         private readonly layoutService: ILayoutService,
-        private readonly pageService: IPageService
+        private readonly ampPageService: IPageService
     ) {
         this.contentViewModel = ko.observable();
         this.pagePostKey = ko.observable();
@@ -51,19 +51,19 @@ export class PageHost {
         this.viewManager.setShutter();
 
         const route = this.router.getCurrentRoute();
-        const pageContract = await this.pageService.getPageByPermalink(route.path);
-        const pageContentContract = await this.pageService.getPageContent(pageContract.key);
+        const pageContract = await this.ampPageService.getPageByPermalink(route.path);
+        const pageContentContract = await this.ampPageService.getPageContent(pageContract.key);
 
         this.pagePostKey(pageContract.key);
 
         const bindingContext = {
             navigationPath: route.path,
-            routeKind: "page",
+            routeKind: "amp-page",
             template: {
                 page: {
                     value: pageContentContract,
                     onValueUpdate: async (updatedPostContract) => {
-                        await this.pageService.updatePageContent(pageContract.key, updatedPostContract);
+                        await this.ampPageService.updatePageContent(pageContract.key, updatedPostContract);
                     }
                 }
             }
