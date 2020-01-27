@@ -10,6 +10,10 @@ import { IMediaService } from "@paperbits/common/media";
 // import { SearchIndexBuilder } from "./searchIndexBuilder";
 
 
+// TODO: This is temporarily:
+import "../bindingHandlers/bindingHandlers.styled";
+
+
 export class PagePublisher implements IPublisher {
     constructor(
         private readonly ampPageService: IPageService,
