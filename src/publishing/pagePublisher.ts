@@ -1,6 +1,6 @@
 import * as Utils from "@paperbits/common/utils";
 import template from "./page.html";
-import { IPublisher, HtmlPage, HtmlPagePublisher } from "@paperbits/common/publishing";
+import { IPublisher, HtmlPage, htmlPublisher } from "@paperbits/common/publishing";
 import { IBlobStorage } from "@paperbits/common/persistence";
 import { IPageService, PageContract } from "@paperbits/common/pages";
 import { ISiteService } from "@paperbits/common/sites";
@@ -20,14 +20,14 @@ export class PagePublisher implements IPublisher {
         private readonly siteService: ISiteService,
         private readonly mediaService: IMediaService,
         private readonly outputBlobStorage: IBlobStorage,
-        private readonly htmlPagePublisher: HtmlPagePublisher,
+        private readonly htmlPublisher: htmlPublisher,
         private readonly logger: Logger
     ) {    }
 
     public async renderPage(page: HtmlPage): Promise<string> {
         this.logger.traceEvent(`Publishing page ${page.title}...`);
 
-        const htmlContent = await this.htmlPagePublisher.renderHtml(page);
+        const htmlContent = await this.htmlPublisher.renderHtml(page);
         return htmlContent;
     }
 
