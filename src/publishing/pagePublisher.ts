@@ -1,6 +1,6 @@
 import * as Utils from "@paperbits/common/utils";
 import template from "./page.html";
-import { IPublisher, HtmlPage, htmlPublisher } from "@paperbits/common/publishing";
+import { IPublisher, HtmlPage, HtmlPagePublisher } from "@paperbits/common/publishing";
 import { IBlobStorage } from "@paperbits/common/persistence";
 import { IPageService, PageContract } from "@paperbits/common/pages";
 import { ISiteService } from "@paperbits/common/sites";
@@ -20,7 +20,7 @@ export class PagePublisher implements IPublisher {
         private readonly siteService: ISiteService,
         private readonly mediaService: IMediaService,
         private readonly outputBlobStorage: IBlobStorage,
-        private readonly htmlPublisher: htmlPublisher,
+        private readonly htmlPublisher: HtmlPagePublisher,
         private readonly logger: Logger
     ) {    }
 
@@ -40,7 +40,6 @@ export class PagePublisher implements IPublisher {
             keywords: page.keywords || settings.site.keywords,
             permalink: page.permalink,
             content: pageContent,
-            template: template,
             author: settings.site.author,
             openGraph: {
                 type: page.permalink === "/" ? "website" : "article",
