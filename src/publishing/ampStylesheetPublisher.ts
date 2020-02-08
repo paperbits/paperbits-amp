@@ -20,7 +20,7 @@ export class AmpStylesheetPublisherPlugin implements HtmlPagePublisherPlugin {
         const element: HTMLStyleElement = document.createElement("style");
         element.setAttribute("type", "text/css");
         element.setAttribute("amp-custom", "");
-        element.textContent = css;
+        element.textContent = css.replace(/\n/g, "").replace(/\s\s+/g, " ");
 
         document.head.appendChild(element);
     }

@@ -65,7 +65,7 @@ export class PageHost {
         const bindingContext = {
             styleManager: styleManager,
             navigationPath: route.path,
-            routeKind: "amp-page",
+            routeKind: "page",
             template: {
                 page: {
                     value: pageContentContract,
