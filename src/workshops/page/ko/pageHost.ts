@@ -10,7 +10,7 @@ import { IPageService } from "@paperbits/common/pages";
 
 @Component({
     selector: "amp-page-host",
-    template: "<h1>AMP</h1><!-- ko if: contentViewModel --><!-- ko widget: contentViewModel, grid: {} --><!-- /ko --><!-- /ko -->"
+    template: "<!-- ko if: contentViewModel --><!-- ko widget: contentViewModel, grid: {} --><!-- /ko --><!-- /ko -->"
 })
 export class PageHost {
     public readonly contentViewModel: ko.Observable<ContentViewModel>;

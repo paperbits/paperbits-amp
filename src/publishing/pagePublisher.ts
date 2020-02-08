@@ -12,6 +12,8 @@ import { IMediaService } from "@paperbits/common/media";
 
 // TODO: This is temporarily:
 import "../bindingHandlers/bindingHandlers.styled";
+import { StyleManager, StyleCompiler, StyleSheet } from "@paperbits/common/styles";
+import { AmpStylesheetPublisherPlugin } from "./ampStylesheetPublisher";
 
 
 export class PagePublisher implements IPublisher {
@@ -20,19 +22,24 @@ export class PagePublisher implements IPublisher {
         private readonly siteService: ISiteService,
         private readonly mediaService: IMediaService,
         private readonly outputBlobStorage: IBlobStorage,
-        private readonly htmlPublisher: HtmlPagePublisher,
+        private readonly htmlPagePublisher: HtmlPagePublisher,
+        private readonly styleCompiler: StyleCompiler,
         private readonly logger: Logger
-    ) {    }
+    ) { }
 
     public async renderPage(page: HtmlPage): Promise<string> {
         this.logger.traceEvent(`Publishing page ${page.title}...`);
 
-        const htmlContent = await this.htmlPublisher.renderHtml(page);
+        const additionalPlugins = [new AmpStylesheetPublisherPlugin()];
+        const htmlContent = await this.htmlPagePublisher.renderHtml(page, additionalPlugins);
+
         return htmlContent;
     }
 
-    private async renderAndUpload(settings: any, page: PageContract /*, indexer: SearchIndexBuilder */): Promise<void> {
+    private async renderAndUpload(settings: any, page: PageContract, globalStyleSheet: StyleSheet, /*, indexer: SearchIndexBuilder */): Promise<void> {
         const pageContent = await this.ampPageService.getPageContent(page.key);
+        const styleManager = new StyleManager();
+        styleManager.setStyleSheet(globalStyleSheet);
 
         const htmlPage: HtmlPage = {
             title: [page.title, settings.site.title].join(" - "),
@@ -41,6 +48,8 @@ export class PagePublisher implements IPublisher {
             permalink: page.permalink,
             content: pageContent,
             author: settings.site.author,
+            template: template,
+            styleReferences: [], // No external CSS allowed in AMP.
             openGraph: {
                 type: page.permalink === "/" ? "website" : "article",
                 title: page.title,
@@ -48,6 +57,15 @@ export class PagePublisher implements IPublisher {
                 url: page.permalink,
                 siteName: settings.site.title
                 // image: { ... }
+            },
+            bindingContext: {
+                styleManager: styleManager,
+                navigationPath: page.permalink,
+                template: {
+                    page: {
+                        value: pageContent,
+                    }
+                }
             }
         };
 
@@ -63,6 +81,8 @@ export class PagePublisher implements IPublisher {
                 this.logger.traceError(error, "Could not retrieve favicon.");
             }
         }
+
+
 
         // settings.site.faviconSourceKey
         const htmlContent = await this.renderPage(htmlPage);
@@ -89,6 +109,8 @@ export class PagePublisher implements IPublisher {
     }
 
     public async publish(): Promise<void> {
+        const globalStyleSheet = await this.styleCompiler.getStyleSheet();
+
         try {
             const pages = await this.ampPageService.search("");
             const results = [];
@@ -97,7 +119,7 @@ export class PagePublisher implements IPublisher {
             // const searchIndexBuilder = new SearchIndexBuilder();
 
             for (const page of pages) {
-                results.push(this.renderAndUpload(settings, page /*, searchIndexBuilder */));
+                results.push(this.renderAndUpload(settings, page, globalStyleSheet /*, searchIndexBuilder */));
                 // sitemapBuilder.appendPermalink(page.permalink);
             }
 
