@@ -6,6 +6,7 @@ import { ViewManager, ViewManagerMode } from "@paperbits/common/ui";
 import { ContentViewModelBinder, ContentViewModel } from "@paperbits/core/content/ko";
 import { ILayoutService } from "@paperbits/common/layouts";
 import { IPageService } from "@paperbits/common/pages";
+import { StyleManager, StyleCompiler } from "@paperbits/common/styles";
 
 
 @Component({
@@ -21,7 +22,8 @@ export class PageHost {
         private readonly eventManager: EventManager,
         private readonly viewManager: ViewManager,
         private readonly layoutService: ILayoutService,
-        private readonly ampPageService: IPageService
+        private readonly ampPageService: IPageService,
+        private readonly styleCompiler: StyleCompiler
     ) {
         this.contentViewModel = ko.observable();
         this.pagePostKey = ko.observable();
@@ -56,7 +58,12 @@ export class PageHost {
 
         this.pagePostKey(pageContract.key);
 
+        const styleManager = new StyleManager(this.eventManager);
+        const styleSheet = await this.styleCompiler.getStyleSheet();
+        styleManager.setStyleSheet(styleSheet);
+
         const bindingContext = {
+            styleManager: styleManager,
             navigationPath: route.path,
             routeKind: "amp-page",
             template: {
