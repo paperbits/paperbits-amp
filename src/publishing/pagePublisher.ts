@@ -83,8 +83,6 @@ export class PagePublisher implements IPublisher {
             }
         }
 
-
-
         // settings.site.faviconSourceKey
         const htmlContent = await this.renderPage(htmlPage);
 
