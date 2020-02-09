@@ -45,6 +45,7 @@ export class PictureViewModelBinder implements ViewModelBinder<PictureModel, Pic
             displayName: "Picture (AMP)",
             readonly: bindingContext ? bindingContext.readonly : false,
             model: model,
+            draggable: true,
             editor: "amp-picture-editor",
             applyChanges: async (changes) => {
                 await this.modelToViewModel(model, viewModel, bindingContext);

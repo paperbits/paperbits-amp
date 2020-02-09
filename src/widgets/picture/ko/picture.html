@@ -1,16 +1,19 @@
-<!-- ko ifnot: working -->
+<div>
+    <!-- ko ifnot: working -->
 
-<!-- ko if: hyperlink -->
-<a data-bind="hyperlink: hyperlink">
+    <!-- ko if: hyperlink -->
+    <a data-bind="hyperlink: hyperlink">
+        <amp-img
+            data-bind="styled: styles, attr: { src: sourceUrl, alt: caption }, size: { width: width, height: height }"
+            src="https://" width="200" height="100" layout="fixed">
+        </amp-img>
+    </a>
+    <!-- /ko -->
+    <!-- ko ifnot: hyperlink -->
     <amp-img data-bind="styled: styles, attr: { src: sourceUrl, alt: caption }, size: { width: width, height: height }"
         src="https://" width="200" height="100" layout="fixed">
     </amp-img>
-</a>
-<!-- /ko -->
-<!-- ko ifnot: hyperlink -->
-<amp-img data-bind="styled: styles, attr: { src: sourceUrl, alt: caption }, size: { width: width, height: height }"
-    src="https://" width="200" height="100" layout="fixed">
-</amp-img>
-<!-- /ko -->
+    <!-- /ko -->
 
-<!-- /ko -->
+    <!-- /ko -->
+</div>
