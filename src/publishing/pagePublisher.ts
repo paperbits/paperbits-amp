@@ -46,6 +46,7 @@ export class PagePublisher implements IPublisher {
             description: page.description || settings.site.description,
             keywords: page.keywords || settings.site.keywords,
             permalink: page.permalink,
+            url: `https://${settings.site.hostname}${page.permalink}`,
             content: pageContent,
             author: settings.site.author,
             template: template,
