@@ -70,7 +70,7 @@ export class PagesWorkshop {
         pageItem.isSelected(true);
 
         const view: View = {
-            heading: "AMP Page",
+            heading: "AMP page",
             component: {
                 name: "amp-page-details-workshop",
                 params: {
