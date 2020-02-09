@@ -17,7 +17,7 @@ export class AmpStylesheetPublisherPlugin implements HtmlPagePublisherPlugin {
         const styleSheets = styleManager.getAllStyleSheets();
         const compiler = new JssCompiler();
 
-        let css = "";
+        let css = "*{position:relative}body,html{height:100%;width:100%;display:flex;flex-direction:column}.stretch{flex:1;height:100%}layout,main{flex:1;flex-direction:column;display:flex}.block{display:block;flex-basis:100%}";
         styleSheets.forEach(styleSheet => {
             css += " " + compiler.styleSheetToCss(styleSheet);
         });
