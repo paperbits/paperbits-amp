@@ -5,6 +5,7 @@ import { PageDetailsWorkshop } from "./workshops/page/ko/pageDetails";
 import { PageSelector } from "./workshops/page/ko/pageSelector";
 import { PageHost } from "./workshops/page/ko/pageHost";
 import { AmpPageService } from "./services/page";
+import { PictureDesignModule } from "./widgets/picture/ko";
 
 
 export class PageDesignModule implements IInjectorModule {
@@ -15,5 +16,7 @@ export class PageDesignModule implements IInjectorModule {
         injector.bind("ampPageSelector", PageSelector);
         injector.bindToCollection("workshopSections", PagesToolButton);
         injector.bind("ampPageService", AmpPageService);
+
+        injector.bindModule(new PictureDesignModule());
     }
 }

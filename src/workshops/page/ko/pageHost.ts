@@ -80,6 +80,8 @@ export class PageHost {
         const layoutContentContract = await this.layoutService.getLayoutContent(layoutContract.key);
         const contentViewModel = await this.contentViewModelBinder.getContentViewModelByKey(layoutContentContract, bindingContext);
 
+        contentViewModel["widgetBinding"].provides = ["amp"];
+
         this.contentViewModel(contentViewModel);
 
         this.viewManager.removeShutter();
