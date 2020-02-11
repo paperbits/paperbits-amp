@@ -3,10 +3,6 @@ import { StyleManager } from "@paperbits/common/styles";
 import { JssCompiler } from "@paperbits/styles/jssCompiler";
 
 export class AmpStylesheetPublisherPlugin implements HtmlPagePublisherPlugin {
-    constructor() {
-        // TODO
-    }
-
     public async apply(document: Document, page: HtmlPage): Promise<void> {
         const canonicalLinkElement: HTMLStyleElement = document.createElement("link");
         canonicalLinkElement.setAttribute("rel", "canonical");
