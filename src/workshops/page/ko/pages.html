@@ -28,7 +28,7 @@
     <spinner></spinner>
     <!--/ko-->
 
-    <div class="flex-item flex-item-grow list" role="list"
+    <div class="flex flex-column flex-item flex-item-grow" role="list"
         data-bind="foreach: { data: pages, as: 'page' }, scrollable: true">
         <a href="#" role="listitem" class="list-item"
             data-bind="css: { selected: page.isSelected }, activate: $component.selectPage, selectItem: page.isSelected">
