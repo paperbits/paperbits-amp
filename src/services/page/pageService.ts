@@ -3,6 +3,7 @@ import { PageContract, IPageService } from "@paperbits/common/pages";
 import { IObjectStorage, Operator, Query } from "@paperbits/common/persistence";
 import { IBlockService } from "@paperbits/common/blocks";
 import { Contract } from "@paperbits/common/contract";
+import { IPermalinkService } from "@paperbits/common/permalinks";
 
 const pagesPath = "amp-pages";
 const documentsPath = "files";
@@ -11,6 +12,7 @@ const templateBlockKey = "blocks/new-page-template";
 export class AmpPageService implements IPageService {
     constructor(
         private readonly objectStorage: IObjectStorage,
+        private readonly permalinkService: IPermalinkService,
         private readonly blockService: IBlockService
     ) { }
 
@@ -110,5 +112,14 @@ export class AmpPageService implements IPageService {
 
         const page = await this.getPageByKey(pageKey);
         this.objectStorage.updateObject(page.contentKey, content);
+    }
+
+    public async updatePagePemalink(pageKey: string, permalink: string): Promise<void> {
+        const pageContract = await this.getPageByKey(pageKey);
+        const permalinkContract = await this.permalinkService.getPermalinkByKey(pageContract.permalinkKey);
+
+        permalinkContract.uri = permalink;
+        
+        await this.permalinkService.updatePermalink(permalinkContract);
     }
 }
