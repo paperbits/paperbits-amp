@@ -17,7 +17,7 @@ export class PictureDesignModule implements IInjectorModule {
         };
 
         injector.bindInstanceToCollection("styleGroups", styleGroup);
-        injector.bind("pictureEditor", PictureEditor);
+        injector.bind("ampPictureEditor", PictureEditor);
         injector.bindToCollection<IWidgetHandler>("widgetHandlers", PictureHandlers, "pictureWidgetHandler");
         injector.bindToCollection<IContentDropHandler>("dropHandlers",  PictureHandlers, "pictureDropHandler");
         injector.bind("picture", PictureViewModel);
