@@ -6,6 +6,7 @@ import { PageSelector } from "./workshops/page/ko/pageSelector";
 import { PageHost } from "./workshops/page/ko/pageHost";
 import { AmpPageService } from "./services/page";
 import { PictureDesignModule } from "./widgets/picture/ko";
+import { CollapsiblePanelDesignModule } from "./widgets/collapsible-panel";
 
 
 export class PageDesignModule implements IInjectorModule {
@@ -18,5 +19,6 @@ export class PageDesignModule implements IInjectorModule {
         injector.bind("ampPageService", AmpPageService);
 
         injector.bindModule(new PictureDesignModule());
+        injector.bindModule(new CollapsiblePanelDesignModule());
     }
 }

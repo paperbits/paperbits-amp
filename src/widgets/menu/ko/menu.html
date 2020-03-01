@@ -1,0 +1,17 @@
+<nav data-bind="secured: roles, styled: styles">
+    <!--ko if: $component.nodes().length > 0 -->
+
+    <!-- ko if: $component.layout() === 'horizontal' -->
+    <div class="menu menu-horizontal" data-bind="template: { name: 'horizontalMenu', data: $component }"></div>
+    <!--/ko-->
+
+    <!-- ko if: $component.layout() === 'vertical' -->
+    <div class="menu menu-vertical" data-bind="template: { name: 'verticalMenu', data: $component }"></div>
+    <!--/ko-->
+
+    <!--/ko-->
+
+    <!--ko if: $component.nodes().length === 0 -->
+    <p class="not-configured">It seems that you don't have navigation items here.</p>
+    <!--/ko-->
+</nav>
