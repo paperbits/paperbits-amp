@@ -25,8 +25,8 @@ export class PagePublisher implements IPublisher {
     public async renderPage(page: HtmlPage): Promise<string> {
         this.logger.traceEvent(`Publishing page ${page.title}...`);
 
-        const additionalPlugins = [new AmpStylesheetPublisherPlugin()];
-        const htmlContent = await this.htmlPagePublisher.renderHtml(page, additionalPlugins);
+        const overridePlugins = [new AmpStylesheetPublisherPlugin()];
+        const htmlContent = await this.htmlPagePublisher.renderHtml(page, overridePlugins);
 
         return minify(htmlContent, {
             removeAttributeQuotes: true,
