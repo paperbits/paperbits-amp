@@ -1,5 +1,6 @@
 import * as Utils from "@paperbits/common/utils";
 import template from "./page.html";
+import { minify } from "html-minifier-terser";
 import { IPublisher, HtmlPage, HtmlPagePublisher } from "@paperbits/common/publishing";
 import { IBlobStorage } from "@paperbits/common/persistence";
 import { IPageService, PageContract } from "@paperbits/common/pages";
@@ -27,7 +28,23 @@ export class PagePublisher implements IPublisher {
         const additionalPlugins = [new AmpStylesheetPublisherPlugin()];
         const htmlContent = await this.htmlPagePublisher.renderHtml(page, additionalPlugins);
 
-        return htmlContent;
+        return minify(htmlContent, {
+            removeAttributeQuotes: true,
+            caseSensitive: true,
+            collapseBooleanAttributes: true,
+            collapseInlineTagWhitespace: true,
+            collapseWhitespace: true,
+            html5: true,
+            minifyCSS: true,
+            preserveLineBreaks: false,
+            removeComments: true,
+            removeEmptyAttributes: true,
+            removeOptionalTags: false,
+            removeRedundantAttributes: false,
+            removeScriptTypeAttributes: false,
+            removeStyleLinkTypeAttributes: false,
+            removeTagWhitespace: true
+        });
     }
 
     private async renderAndUpload(settings: any, page: PageContract, globalStyleSheet: StyleSheet, /*, indexer: SearchIndexBuilder */): Promise<void> {

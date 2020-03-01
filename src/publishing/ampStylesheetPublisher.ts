@@ -1,8 +1,24 @@
+import * as fs from "fs";
+import * as path from "path";
 import { HtmlPagePublisherPlugin, HtmlPage } from "@paperbits/common/publishing";
 import { StyleManager } from "@paperbits/common/styles";
 import { JssCompiler } from "@paperbits/styles/jssCompiler";
 
+
 export class AmpStylesheetPublisherPlugin implements HtmlPagePublisherPlugin {
+    private async readFile(filePath: string): Promise<string> {
+        const fullPath = path.resolve(__dirname, filePath);
+
+        return new Promise<string>((resolve, reject) => {
+            fs.readFile(fullPath, { encoding: "utf-8" }, (err, content) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(content);
+            });
+        });
+    }
+
     public async apply(document: Document, page: HtmlPage): Promise<void> {
         const canonicalLinkElement: HTMLStyleElement = document.createElement("link");
         canonicalLinkElement.setAttribute("rel", "canonical");
@@ -13,7 +29,8 @@ export class AmpStylesheetPublisherPlugin implements HtmlPagePublisherPlugin {
         const styleSheets = styleManager.getAllStyleSheets();
         const compiler = new JssCompiler();
 
-        let css = "*{position:relative}body,html{height:100%;width:100%;display:flex;flex-direction:column}.stretch{flex:1;height:100%}layout,main{flex:1;flex-direction:column;display:flex}.block{display:block;flex-basis:100%} html:not([amp4ads]),html:not([amp4ads]) body{min-height:100%;display:flex;flex:1;}";
+        let css = await this.readFile("./assets/styles/theme.css");
+
         styleSheets.forEach(styleSheet => {
             css += " " + compiler.compile(styleSheet);
         });
