@@ -9,7 +9,9 @@ import { Logger } from "@paperbits/common/logging";
 import { IMediaService } from "@paperbits/common/media";
 import { StyleManager, StyleCompiler, StyleSheet } from "@paperbits/common/styles";
 import { AmpStylesheetPublisherPlugin } from "./ampStylesheetPublisher";
-
+import { KnockoutHtmlPagePublisherPlugin } from "@paperbits/core/publishing/knockoutHtmlPagePublisherPlugin";
+import { ContentViewModelBinder } from "@paperbits/core/content/ko";
+import { ILayoutService } from "@paperbits/common/layouts";
 
 export class PagePublisher implements IPublisher {
     constructor(
@@ -19,13 +21,18 @@ export class PagePublisher implements IPublisher {
         private readonly outputBlobStorage: IBlobStorage,
         private readonly htmlPagePublisher: HtmlPagePublisher,
         private readonly styleCompiler: StyleCompiler,
-        private readonly logger: Logger
+        private readonly logger: Logger,
+        private readonly contentViewModelBinder: ContentViewModelBinder,
+        private readonly layoutService: ILayoutService
     ) { }
 
     public async renderPage(page: HtmlPage): Promise<string> {
         this.logger.traceEvent(`Publishing page ${page.title}...`);
 
-        const overridePlugins = [new AmpStylesheetPublisherPlugin()];
+        const overridePlugins = [
+            new KnockoutHtmlPagePublisherPlugin(this.contentViewModelBinder, this.layoutService),
+            new AmpStylesheetPublisherPlugin()
+        ];
         const htmlContent = await this.htmlPagePublisher.renderHtml(page, overridePlugins);
 
         return minify(htmlContent, {
