@@ -18,6 +18,7 @@
         "@paperbits/core": "0.1.230",
         "@paperbits/common": "0.1.230",
         "@paperbits/styles": "0.1.230",
+        "html-minifier-terser": "^5.0.4",
         "knockout": "^3.5.1",
         "knockout.validation": "^2.0.4",
         "inline-css": "^2.5.0",
