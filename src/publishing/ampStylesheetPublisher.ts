@@ -1,8 +1,9 @@
+import * as fs from "fs";
+import * as path from "path";
 import { HtmlPagePublisherPlugin, HtmlPage } from "@paperbits/common/publishing";
 import { StyleManager } from "@paperbits/common/styles";
 import { JssCompiler } from "@paperbits/styles/jssCompiler";
-import * as fs from "fs";
-import * as path from "path";
+
 
 export class AmpStylesheetPublisherPlugin implements HtmlPagePublisherPlugin {
     private async readFile(filePath: string): Promise<string> {
