@@ -8,12 +8,14 @@ import { ISiteService } from "@paperbits/common/sites";
 import { Logger } from "@paperbits/common/logging";
 import { IMediaService } from "@paperbits/common/media";
 import { StyleManager, StyleCompiler, StyleSheet } from "@paperbits/common/styles";
-import { AmpStylesheetPublisherPlugin } from "./ampStylesheetPublisher";
-import { KnockoutHtmlPagePublisherPlugin } from "@paperbits/core/publishing/knockoutHtmlPagePublisherPlugin";
+import { AmpStylesheetPublisherPlugin } from "./ampStylesheetPlugin";
+import { AmpAnalyticsHtmlPagePublisherPlugin } from "./ampAnalyticsPlugin";
+import { KnockoutHtmlPagePublisherPlugin } from "@paperbits/core/publishing";
 import { ContentViewModelBinder } from "@paperbits/core/content/ko";
 import { ILayoutService } from "@paperbits/common/layouts";
 
-export class PagePublisher implements IPublisher {
+
+export class AmpPagePublisher implements IPublisher {
     constructor(
         private readonly ampPageService: IPageService,
         private readonly siteService: ISiteService,
@@ -31,8 +33,10 @@ export class PagePublisher implements IPublisher {
 
         const overridePlugins = [
             new KnockoutHtmlPagePublisherPlugin(this.contentViewModelBinder, this.layoutService),
-            new AmpStylesheetPublisherPlugin()
+            new AmpStylesheetPublisherPlugin(),
+            new AmpAnalyticsHtmlPagePublisherPlugin(this.siteService)
         ];
+
         const htmlContent = await this.htmlPagePublisher.renderHtml(page, overridePlugins);
 
         return minify(htmlContent, {
