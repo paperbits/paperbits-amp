@@ -4,7 +4,7 @@ import { PagesWorkshop } from "./workshops/page/ko/pages";
 import { PageDetailsWorkshop } from "./workshops/page/ko/pageDetails";
 import { PageSelector } from "./workshops/page/ko/pageSelector";
 import { PageHost } from "./workshops/page/ko/pageHost";
-import { AmpPageService } from "./services/page";
+import { AmpPageService, AmpPageHyperlinkProvider } from "./services/page";
 import { PictureDesignModule } from "./widgets/picture/ko";
 import { CollapsiblePanelDesignModule } from "./widgets/collapsible-panel";
 
@@ -17,8 +17,9 @@ export class PageDesignModule implements IInjectorModule {
         injector.bind("ampPageSelector", PageSelector);
         injector.bindToCollection("workshopSections", PagesToolButton);
         injector.bind("ampPageService", AmpPageService);
-
         injector.bindModule(new PictureDesignModule());
         injector.bindModule(new CollapsiblePanelDesignModule());
+        injector.bindToCollection("hyperlinkProviders", AmpPageHyperlinkProvider);
+        injector.bind("pageHyperlinkProvider", AmpPageHyperlinkProvider);
     }
 }

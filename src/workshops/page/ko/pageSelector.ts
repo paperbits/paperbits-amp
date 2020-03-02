@@ -25,7 +25,7 @@ export class PageSelector implements IResourceSelector<HyperlinkModel> {
     @Event()
     public onSelect: (selection: HyperlinkModel) => void;
 
-    constructor(private readonly pageService: IPageService) {
+    constructor(private readonly ampPageService: IPageService) {
         this.pages = ko.observableArray();
         this.selectedPage = ko.observable();
         this.searchPattern = ko.observable();
@@ -44,7 +44,7 @@ export class PageSelector implements IResourceSelector<HyperlinkModel> {
     public async searchPages(searchPattern: string = ""): Promise<void> {
         this.working(true);
 
-        const pages = await this.pageService.search(searchPattern);
+        const pages = await this.ampPageService.search(searchPattern);
         const pageItems = pages.map(page => new PageItem(page));
 
         this.pages(pageItems);
@@ -105,7 +105,7 @@ export class PageSelector implements IResourceSelector<HyperlinkModel> {
     }
 
     private async getAnchors(pageItem: PageItem): Promise<void> {
-        const pageContent = await this.pageService.getPageContent(pageItem.key);
+        const pageContent = await this.ampPageService.getPageContent(pageItem.key);
         const children = AnchorUtils.getHeadingNodes(pageContent, 1, 6);
         let selectedAnchor: AnchorItem;
 
