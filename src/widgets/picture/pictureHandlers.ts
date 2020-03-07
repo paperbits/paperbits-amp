@@ -20,14 +20,8 @@ export class PictureHandlers implements IWidgetHandler, IContentDropHandler {
             iconClass: "paperbits-image-2",
             requires: ["amp"],
             createModel: async () => {
-                const backgroundModel = new BackgroundModel();
-                backgroundModel.sourceUrl = sourceUrl;
-                backgroundModel.color = "#BDBFC1";
-                backgroundModel.size = "150px 150px";
-                backgroundModel.position = "center center";
-
                 const pictureModel = new PictureModel();
-                pictureModel.sourceKey = "";
+                pictureModel.sourceKey = sourceUrl;
                 pictureModel.caption = caption;
 
                 return pictureModel;

@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
-import { HtmlPagePublisherPlugin, HtmlPage } from "@paperbits/common/publishing";
+import { HtmlPage } from "@paperbits/common/publishing/htmlPage";
+import { HtmlPagePublisherPlugin } from "@paperbits/common/publishing/htmlPagePublisherPlugin";
 import { StyleManager } from "@paperbits/common/styles";
 import { JssCompiler } from "@paperbits/styles/jssCompiler";
 

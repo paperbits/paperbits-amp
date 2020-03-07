@@ -1,7 +1,15 @@
 import * as Utils from "@paperbits/common/utils";
 import template from "./page.html";
 import { minify } from "html-minifier-terser";
-import { IPublisher, HtmlPage, HtmlPagePublisher } from "@paperbits/common/publishing";
+import {
+    IPublisher,
+    HtmlPage,
+    HtmlPagePublisher,
+    SearchIndexBuilder,
+    SitemapBuilder,
+    SocialShareDataHtmlPagePublisherPlugin,
+    LinkedDataHtmlPagePublisherPlugin
+} from "@paperbits/common/publishing";
 import { IBlobStorage } from "@paperbits/common/persistence";
 import { IPageService, PageContract } from "@paperbits/common/pages";
 import { ISiteService } from "@paperbits/common/sites";
@@ -33,6 +41,8 @@ export class AmpPagePublisher implements IPublisher {
 
         const overridePlugins = [
             new KnockoutHtmlPagePublisherPlugin(this.contentViewModelBinder, this.layoutService),
+            new SocialShareDataHtmlPagePublisherPlugin(this.mediaService),
+            new LinkedDataHtmlPagePublisherPlugin(this.siteService),
             new AmpStylesheetPublisherPlugin(),
             new AmpAnalyticsHtmlPagePublisherPlugin(this.siteService)
         ];
@@ -43,7 +53,7 @@ export class AmpPagePublisher implements IPublisher {
             removeAttributeQuotes: true,
             caseSensitive: true,
             collapseBooleanAttributes: true,
-            collapseInlineTagWhitespace: true,
+            collapseInlineTagWhitespace: false,
             collapseWhitespace: true,
             html5: true,
             minifyCSS: true,
@@ -54,11 +64,11 @@ export class AmpPagePublisher implements IPublisher {
             removeRedundantAttributes: false,
             removeScriptTypeAttributes: false,
             removeStyleLinkTypeAttributes: false,
-            removeTagWhitespace: true
+            removeTagWhitespace: false
         });
     }
 
-    private async renderAndUpload(settings: any, page: PageContract, globalStyleSheet: StyleSheet, /*, indexer: SearchIndexBuilder */): Promise<void> {
+    private async renderAndUpload(settings: any, page: PageContract, globalStyleSheet: StyleSheet, indexer: SearchIndexBuilder): Promise<void> {
         const pageContent = await this.ampPageService.getPageContent(page.key);
         const styleManager = new StyleManager();
         styleManager.setStyleSheet(globalStyleSheet);
@@ -73,6 +83,7 @@ export class AmpPagePublisher implements IPublisher {
             author: settings.site.author,
             template: template,
             styleReferences: [], // No external CSS allowed in AMP.
+            socialShareData: page.socialShareData,
             openGraph: {
                 type: page.permalink === "/" ? "website" : "article",
                 title: page.title,
@@ -92,6 +103,17 @@ export class AmpPagePublisher implements IPublisher {
             }
         };
 
+        if (page.jsonLd) {
+            let structuredData: any;
+            try {
+                structuredData = JSON.parse(page.jsonLd);
+                htmlPage.linkedData = structuredData;
+            }
+            catch (error) {
+                console.log("Unable to parse page linked data: ", error);
+            }
+        }
+
         if (settings.site.faviconSourceKey) {
             try {
                 const media = await this.mediaService.getMediaByKey(settings.site.faviconSourceKey);
@@ -108,22 +130,15 @@ export class AmpPagePublisher implements IPublisher {
         // settings.site.faviconSourceKey
         const htmlContent = await this.renderPage(htmlPage);
 
-        // indexer.appendPage(htmlPage.permalink, htmlPage.title, htmlPage.description, htmlContent);
+        indexer.appendPage(htmlPage.permalink, htmlPage.title, htmlPage.description, htmlContent);
 
         let permalink = page.permalink;
 
-        const regex = /\/[\w]+\.html$/gm;
-        const isHtmlFile = regex.test(permalink);
-
-        if (!isHtmlFile) {
-            /* if filename has no *.html extension we publish it to a dedicated folder with index.html */
-
-            if (!permalink.endsWith("/")) {
-                permalink += "/";
-            }
-
-            permalink = `${permalink}index.html`;
+        if (!permalink.endsWith("/")) {
+            permalink += "/";
         }
+
+        permalink = `${permalink}index.html`;
 
         const contentBytes = Utils.stringToUnit8Array(htmlContent);
         await this.outputBlobStorage.uploadBlob(permalink, contentBytes, "text/html");
@@ -136,23 +151,23 @@ export class AmpPagePublisher implements IPublisher {
             const pages = await this.ampPageService.search("");
             const results = [];
             const settings = await this.siteService.getSiteSettings();
-            // const sitemapBuilder = new SitemapBuilder(settings.site.hostname);
-            // const searchIndexBuilder = new SearchIndexBuilder();
+            const sitemapBuilder = new SitemapBuilder(settings.site.hostname);
+            const searchIndexBuilder = new SearchIndexBuilder();
 
             for (const page of pages) {
-                results.push(this.renderAndUpload(settings, page, globalStyleSheet /*, searchIndexBuilder */));
-                // sitemapBuilder.appendPermalink(page.permalink);
+                results.push(this.renderAndUpload(settings, page, globalStyleSheet, searchIndexBuilder));
+                sitemapBuilder.appendPermalink(page.permalink);
             }
 
             await Promise.all(results);
 
-            // const index = searchIndexBuilder.buildIndex();
-            // const indexBytes = Utils.stringToUnit8Array(index);
-            // await this.outputBlobStorage.uploadBlob("search-index.json", indexBytes, "application/json");
+            const index = searchIndexBuilder.buildIndex();
+            const indexBytes = Utils.stringToUnit8Array(index);
+            await this.outputBlobStorage.uploadBlob("search-index.json", indexBytes, "application/json");
 
-            // const sitemap = sitemapBuilder.buildSitemap();
-            // const contentBytes = Utils.stringToUnit8Array(sitemap);
-            // await this.outputBlobStorage.uploadBlob("sitemap.xml", contentBytes, "text/xml");
+            const sitemap = sitemapBuilder.buildSitemap();
+            const contentBytes = Utils.stringToUnit8Array(sitemap);
+            await this.outputBlobStorage.uploadBlob("sitemap.xml", contentBytes, "text/xml");
         }
         catch (error) {
             this.logger.traceError(error, "AMP page publisher");

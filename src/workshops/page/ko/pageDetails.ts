@@ -5,6 +5,9 @@ import { Router } from "@paperbits/common/routing";
 import { ViewManager } from "@paperbits/common/ui";
 import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorators";
 import { PageItem } from "./pageItem";
+import { ISettingsProvider } from "@paperbits/common/configuration";
+import { BackgroundModel } from "@paperbits/common/widgets/background";
+import { MediaContract, IMediaService } from "@paperbits/common/media";
 
 @Component({
     selector: "amp-page-details-workshop",
@@ -12,18 +15,20 @@ import { PageItem } from "./pageItem";
 })
 export class PageDetailsWorkshop {
     public readonly isReserved: ko.Observable<boolean>;
+    public readonly isSeoEnabled: ko.Observable<boolean>;
+    public readonly socialShareImage: ko.Observable<BackgroundModel>;
 
     constructor(
-        private readonly pageService: IPageService,
+        private readonly ampPageService: IPageService,
         private readonly router: Router,
         private readonly viewManager: ViewManager,
-        private readonly reservedPermalinks: string[]
+        private readonly reservedPermalinks: string[],
+        private readonly settingsProvider: ISettingsProvider,
+        private readonly mediaService: IMediaService
     ) {
-        this.onMounted = this.onMounted.bind(this);
-        this.deletePage = this.deletePage.bind(this);
-        this.updatePage = this.updatePage.bind(this);
-        this.updatePermlaink = this.updatePermlaink.bind(this);
         this.isReserved = ko.observable(false);
+        this.isSeoEnabled = ko.observable(false);
+        this.socialShareImage = ko.observable();
     }
 
     @Param()
@@ -32,17 +37,23 @@ export class PageDetailsWorkshop {
     @Event()
     private readonly onDeleteCallback: () => void;
 
+    @Event()
+    private readonly onCopyCallback: (pageItem: PageItem) => void;
+
     @OnMounted()
     public async onMounted(): Promise<void> {
         this.pageItem.title
             .extend(<any>{ required: true, onlyValid: true })
-            .subscribe(this.updatePage);
+            .subscribe(this.applyChanges);
 
         this.pageItem.description
-            .subscribe(this.updatePage);
+            .subscribe(this.applyChanges);
 
         this.pageItem.keywords
-            .subscribe(this.updatePage);
+            .subscribe(this.applyChanges);
+
+        this.pageItem.jsonLd
+            .subscribe(this.applyChanges);
 
         let validPermalink = this.pageItem.permalink;
 
@@ -51,28 +62,44 @@ export class PageDetailsWorkshop {
         }
         else {
             validPermalink = validPermalink.extend(<any>{ required: true, validPermalink: this.pageItem.key, onlyValid: true });
-            validPermalink.subscribe(this.updatePermlaink);
+            validPermalink.subscribe(this.onPermalinkChange);
+        }
+
+        const socialShareData = this.pageItem.socialShareData();
+
+        if (socialShareData?.imageSourceKey) {
+            const media = await this.mediaService.getMediaByKey(socialShareData.imageSourceKey);
+
+            const imageModel = new BackgroundModel();
+            imageModel.sourceUrl = media.downloadUrl;
+            this.socialShareImage(imageModel);
+        }
+
+        const seoSetting = await this.settingsProvider.getSetting<boolean>("enableSeo");
+
+        if (seoSetting) {
+            this.isSeoEnabled(seoSetting);
         }
 
         await this.router.navigateTo(validPermalink());
         this.viewManager.setHost({ name: "amp-page-host" });
     }
 
-    private async updatePage(): Promise<void> {
-        await this.pageService.updatePage(this.pageItem.toContract());
+    private async applyChanges(): Promise<void> {
+        await this.ampPageService.updatePage(this.pageItem.toContract());
     }
 
-    private async updatePermlaink(): Promise<void> {
+    private async onPermalinkChange(): Promise<void> {
         const permalink = this.pageItem.permalink();
         this.router.updateHistory(permalink, this.pageItem.title());
 
-        await this.updatePage();
+        await this.applyChanges();
     }
 
     public async deletePage(): Promise<void> {
-        await this.pageService.deletePage(this.pageItem.toContract());
+        await this.ampPageService.deletePage(this.pageItem.toContract());
 
-        this.viewManager.notifySuccess("Pages", `Page "${this.pageItem.title()}" was deleted.`);
+        this.viewManager.notifySuccess("AMP pages", `Page "${this.pageItem.title()}" was deleted.`);
         this.viewManager.closeWorkshop("amp-page-details-workshop");
 
         if (this.onDeleteCallback) {
@@ -80,5 +107,40 @@ export class PageDetailsWorkshop {
         }
 
         this.router.navigateTo("/");
+    }
+
+    public async copyPage(): Promise<void> {
+        const copyPermalink = `${this.pageItem.permalink()} copy`;
+        const pageContract = await this.ampPageService.createPage(copyPermalink, `${this.pageItem.title()} copy`, this.pageItem.description(), this.pageItem.keywords());
+
+        const copyContract = this.pageItem.toContract();
+        copyContract.key = pageContract.key;
+        copyContract.permalink = pageContract.permalink;
+        copyContract.title = pageContract.title;
+        copyContract.contentKey = pageContract.contentKey;
+
+        await this.ampPageService.updatePage(copyContract);
+
+        const pageContentContract = await this.ampPageService.getPageContent(this.pageItem.key);
+        await this.ampPageService.updatePageContent(copyContract.key, pageContentContract);
+
+        if (this.onCopyCallback) {
+            this.onCopyCallback(new PageItem(copyContract));
+        }
+    }
+
+    public async onMediaSelected(media: MediaContract): Promise<void> {
+        const socialShareData = this.pageItem.socialShareData() || {};
+
+        socialShareData.imageSourceKey = media.key;
+        socialShareData.title = this.pageItem.title();
+
+        this.pageItem.socialShareData(socialShareData);
+
+        const imageModel = new BackgroundModel();
+        imageModel.sourceUrl = media.downloadUrl;
+        this.socialShareImage(imageModel);
+
+        await this.applyChanges();
     }
 }

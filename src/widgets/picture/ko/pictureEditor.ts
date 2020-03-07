@@ -52,7 +52,6 @@ export class PictureEditor {
     public async initialize(): Promise<void> {
         if (this.model.sourceKey) {
             const background = new BackgroundModel();
-            background.sourceKey = this.model.sourceKey;
             background.sourceUrl = await this.mediaPermalinkResolver.getUrlByTargetKey(this.model.sourceKey);
             this.background(background);
 
@@ -111,7 +110,6 @@ export class PictureEditor {
             this.sourceKey(media.key);
 
             const background = new BackgroundModel(); // TODO: Let's use proper model here
-            background.sourceKey = media.key;
             background.sourceUrl = media.downloadUrl;
             background.size = "contain";
             background.position = "center center";
