@@ -8,7 +8,8 @@ import {
     SearchIndexBuilder,
     SitemapBuilder,
     SocialShareDataHtmlPagePublisherPlugin,
-    LinkedDataHtmlPagePublisherPlugin
+    LinkedDataHtmlPagePublisherPlugin,
+    OpenGraphHtmlPagePublisherPlugin
 } from "@paperbits/common/publishing";
 import { IBlobStorage } from "@paperbits/common/persistence";
 import { IPageService, PageContract } from "@paperbits/common/pages";
@@ -43,6 +44,7 @@ export class AmpPagePublisher implements IPublisher {
             new KnockoutHtmlPagePublisherPlugin(this.contentViewModelBinder, this.layoutService),
             new SocialShareDataHtmlPagePublisherPlugin(this.mediaService),
             new LinkedDataHtmlPagePublisherPlugin(this.siteService),
+            new OpenGraphHtmlPagePublisherPlugin(this.mediaService),
             new AmpStylesheetPublisherPlugin(),
             new AmpAnalyticsHtmlPagePublisherPlugin(this.siteService)
         ];
@@ -50,7 +52,6 @@ export class AmpPagePublisher implements IPublisher {
         const htmlContent = await this.htmlPagePublisher.renderHtml(page, overridePlugins);
 
         return minify(htmlContent, {
-            removeAttributeQuotes: true,
             caseSensitive: true,
             collapseBooleanAttributes: true,
             collapseInlineTagWhitespace: false,
@@ -64,7 +65,8 @@ export class AmpPagePublisher implements IPublisher {
             removeRedundantAttributes: false,
             removeScriptTypeAttributes: false,
             removeStyleLinkTypeAttributes: false,
-            removeTagWhitespace: false
+            removeTagWhitespace: false,
+            removeAttributeQuotes: false
         });
     }
 
@@ -79,6 +81,7 @@ export class AmpPagePublisher implements IPublisher {
             keywords: page.keywords || settings.site.keywords,
             permalink: page.permalink,
             url: `https://${settings.site.hostname}${page.permalink}`,
+            siteHostName: settings.site.hostname,
             content: pageContent,
             author: settings.site.author,
             template: template,
@@ -86,11 +89,9 @@ export class AmpPagePublisher implements IPublisher {
             socialShareData: page.socialShareData,
             openGraph: {
                 type: page.permalink === "/" ? "website" : "article",
-                title: page.title,
+                title: page.title || settings.site.title,
                 description: page.description || settings.site.description,
-                url: page.permalink,
                 siteName: settings.site.title
-                // image: { ... }
             },
             bindingContext: {
                 styleManager: styleManager,
