@@ -134,7 +134,7 @@ export class PageDetailsWorkshop {
             this.socialShareImage(null);
         }
 
-        const socialShareData = this.pageItem.socialShareData();
+        const socialShareData = this.pageItem.socialShareData() || {};
 
         socialShareData.image = {
             sourceKey: media.key,
