@@ -1,13 +1,16 @@
+import { Contract } from "@paperbits/common";
 import { HyperlinkContract } from "@paperbits/common/editing";
-import { IPermalinkResolver, HyperlinkModel } from "@paperbits/common/permalinks";
 import { IPageService, PageContract } from "@paperbits/common/pages";
+import { HyperlinkModel, IPermalinkResolver } from "@paperbits/common/permalinks";
+import { ContentItemContract } from "@paperbits/common/contentItems";
 
+const pagesPath = "amp-pages/";
 
 export class AmpPagePermalinkResolver implements IPermalinkResolver {
     constructor(private readonly pageService: IPageService) { }
 
     public canHandleTarget(targetKey: string): boolean {
-        return targetKey.startsWith("amp-pages/");
+        return targetKey.startsWith(pagesPath);
     }
 
     public async getUrlByTargetKey(targetKey: string, locale?: string): Promise<string> {
@@ -15,7 +18,7 @@ export class AmpPagePermalinkResolver implements IPermalinkResolver {
             throw new Error("Target key cannot be null or empty.");
         }
 
-        if (!targetKey.startsWith("pages/")) {
+        if (!targetKey.startsWith(pagesPath)) {
             return null;
         }
 
@@ -43,7 +46,7 @@ export class AmpPagePermalinkResolver implements IPermalinkResolver {
             throw new Error("Target key cannot be null or empty.");
         }
 
-        if (!hyperlinkContract.targetKey.startsWith("pages/")) {
+        if (!hyperlinkContract.targetKey.startsWith(pagesPath)) {
             return null;
         }
 
@@ -67,23 +70,24 @@ export class AmpPagePermalinkResolver implements IPermalinkResolver {
         return hyperlinkModel;
     }
 
-    public async getHyperlinkByTargetKey(targetKey: string, locale?: string): Promise<HyperlinkModel> {
-        if (!targetKey) {
-            throw new Error("Target key cannot be null or empty.");
+    public async getContentByPermalink(permalink: string, locale?: string): Promise<Contract> {
+        if (!permalink) {
+            throw new Error(`Parameter "permalink" not specified.`);
         }
 
-        if (!targetKey.startsWith("pages/")) {
-            return null;
+        const pageContract = await this.pageService.getPageByPermalink(permalink, locale);
+        const pageContent = await this.pageService.getPageContent(pageContract.key);
+
+        return pageContent;
+    }
+
+    public async getContentItemByPermalink(permalink: string, locale?: string): Promise<ContentItemContract> {
+        if (!permalink) {
+            throw new Error(`Parameter "permalink" not specified.`);
         }
 
-        const contentItem = await this.pageService.getPageByKey(targetKey, locale);
+        const pageContract = await this.pageService.getPageByPermalink(permalink, locale);
 
-        if (!contentItem) {
-            return null;
-        }
-
-        const hyperlink = await this.getHyperlink(contentItem);
-
-        return hyperlink;
+        return pageContract;
     }
 }
