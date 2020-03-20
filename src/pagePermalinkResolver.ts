@@ -70,6 +70,26 @@ export class AmpPagePermalinkResolver implements IPermalinkResolver {
         return hyperlinkModel;
     }
 
+    public async getHyperlinkByTargetKey(targetKey: string, locale?: string): Promise<HyperlinkModel> {
+        if (!targetKey) {
+            throw new Error("Target key cannot be null or empty.");
+        }
+
+        if (!targetKey.startsWith(pagesPath)) {
+            return null;
+        }
+
+        const contentItem = await this.pageService.getPageByKey(targetKey, locale);
+
+        if (!contentItem) {
+            return null;
+        }
+
+        const hyperlink = await this.getHyperlink(contentItem);
+
+        return hyperlink;
+    }
+
     public async getContentByPermalink(permalink: string, locale?: string): Promise<Contract> {
         if (!permalink) {
             throw new Error(`Parameter "permalink" not specified.`);
