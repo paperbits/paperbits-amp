@@ -3,11 +3,15 @@ import { HyperlinkContract } from "@paperbits/common/editing";
 import { IPageService, PageContract } from "@paperbits/common/pages";
 import { HyperlinkModel, IPermalinkResolver } from "@paperbits/common/permalinks";
 import { ContentItemContract } from "@paperbits/common/contentItems";
+import { ILocaleService } from "@paperbits/common/localization";
 
 const pagesPath = "amp-pages/";
 
 export class AmpPagePermalinkResolver implements IPermalinkResolver {
-    constructor(private readonly pageService: IPageService) { }
+    constructor(
+        private readonly pageService: IPageService,
+        private readonly localeService: ILocaleService
+    ) { }
 
     public canHandleTarget(targetKey: string): boolean {
         return targetKey.startsWith(pagesPath);
@@ -22,13 +26,18 @@ export class AmpPagePermalinkResolver implements IPermalinkResolver {
             return null;
         }
 
-        const contentItem = await this.pageService.getPageByKey(targetKey, locale);
+        let pageContract = await this.pageService.getPageByKey(targetKey, locale);
 
-        if (!contentItem) {
-            throw new Error(`Could not find permalink with key ${targetKey}.`);
+        if (!pageContract) {
+            const defaultLocale = await this.localeService.getDefaultLocale();
+            pageContract = await this.pageService.getPageByKey(targetKey, defaultLocale);
+
+            if (!pageContract) {
+                throw new Error(`Could not find permalink with key ${targetKey}.`);
+            }
         }
 
-        return contentItem.permalink;
+        return pageContract.permalink;
     }
 
     private async getHyperlink(pageContract: PageContract, target: string = "_self"): Promise<HyperlinkModel> {
@@ -79,13 +88,18 @@ export class AmpPagePermalinkResolver implements IPermalinkResolver {
             return null;
         }
 
-        const contentItem = await this.pageService.getPageByKey(targetKey, locale);
+        let pageContract = await this.pageService.getPageByKey(targetKey, locale);
 
-        if (!contentItem) {
-            return null;
+        if (!pageContract) {
+            const defaultLocale = await this.localeService.getDefaultLocale();
+            pageContract = await this.pageService.getPageByKey(targetKey, defaultLocale);
+
+            if (!pageContract) {
+                return null;
+            }
         }
 
-        const hyperlink = await this.getHyperlink(contentItem);
+        const hyperlink = await this.getHyperlink(pageContract);
 
         return hyperlink;
     }
@@ -95,7 +109,17 @@ export class AmpPagePermalinkResolver implements IPermalinkResolver {
             throw new Error(`Parameter "permalink" not specified.`);
         }
 
-        const pageContract = await this.pageService.getPageByPermalink(permalink, locale);
+        let pageContract = await this.pageService.getPageByPermalink(permalink, locale);
+
+        if (!pageContract) {
+            const defaultLocale = await this.localeService.getDefaultLocale();
+            pageContract = await this.pageService.getPageByPermalink(permalink, defaultLocale);
+
+            if (!pageContract) {
+                return null;
+            }
+        }
+
         const pageContent = await this.pageService.getPageContent(pageContract.key);
 
         return pageContent;

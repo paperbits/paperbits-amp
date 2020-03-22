@@ -70,28 +70,42 @@ export class AmpPagePublisher implements IPublisher {
         });
     }
 
-    private async renderAndUpload(settings: any, page: PageContract, globalStyleSheet: StyleSheet, indexer: SearchIndexBuilder): Promise<void> {
+    private async renderAndUpload(settings: any, page: PageContract, globalStyleSheet: StyleSheet, indexer: SearchIndexBuilder, locale?: string): Promise<void> {
+        const siteAuthor = settings?.site?.author;
+        const siteTitle = settings?.site?.title;
+        const siteDescription = settings?.site?.description;
+        const siteKeywords = settings?.site?.keywords;
+        const siteHostname = settings?.site?.hostname;
+        const faviconSourceKey = settings?.site?.faviconSourceKey;
+
+        const localePrefix = locale ? `/${locale}` : "";
+        
+        const pagePermalink = `${localePrefix}${page.permalink}`;
         const pageContent = await this.ampPageService.getPageContent(page.key);
+        const pageUrl = siteHostname
+            ? `https://${settings?.site?.hostname}${pagePermalink}`
+            : pagePermalink;
+
         const styleManager = new StyleManager();
         styleManager.setStyleSheet(globalStyleSheet);
 
         const htmlPage: HtmlPage = {
-            title: [page.title, settings.site.title].join(" - "),
-            description: page.description || settings.site.description,
-            keywords: page.keywords || settings.site.keywords,
+            title: [page.title, siteTitle].join(" - "),
+            description: page.description || siteDescription,
+            keywords: page.keywords || siteKeywords,
             permalink: page.permalink,
-            url: `https://${settings.site.hostname}${page.permalink}`,
-            siteHostName: settings.site.hostname,
+            url: pageUrl,
+            siteHostName: siteHostname,
             content: pageContent,
-            author: settings.site.author,
+            author: siteAuthor,
             template: template,
             styleReferences: [], // No external CSS allowed in AMP.
             socialShareData: page.socialShareData,
             openGraph: {
                 type: page.permalink === "/" ? "website" : "article",
-                title: page.title || settings.site.title,
-                description: page.description || settings.site.description,
-                siteName: settings.site.title
+                title: page.title || siteTitle,
+                description: page.description || siteDescription,
+                siteName: siteTitle
             },
             bindingContext: {
                 styleManager: styleManager,
@@ -115,9 +129,9 @@ export class AmpPagePublisher implements IPublisher {
             }
         }
 
-        if (settings.site.faviconSourceKey) {
+        if (faviconSourceKey) {
             try {
-                const media = await this.mediaService.getMediaByKey(settings.site.faviconSourceKey);
+                const media = await this.mediaService.getMediaByKey(faviconSourceKey);
 
                 if (media) {
                     htmlPage.faviconPermalink = media.permalink;
@@ -128,7 +142,6 @@ export class AmpPagePublisher implements IPublisher {
             }
         }
 
-        // settings.site.faviconSourceKey
         const htmlContent = await this.renderPage(htmlPage);
 
         indexer.appendPage(htmlPage.permalink, htmlPage.title, htmlPage.description, htmlContent);
@@ -152,7 +165,7 @@ export class AmpPagePublisher implements IPublisher {
             const pages = await this.ampPageService.search("");
             const results = [];
             const settings = await this.siteService.getSiteSettings();
-            const sitemapBuilder = new SitemapBuilder(settings.site.hostname);
+            const sitemapBuilder = new SitemapBuilder(settings?.site?.hostname);
             const searchIndexBuilder = new SearchIndexBuilder();
 
             for (const page of pages) {
