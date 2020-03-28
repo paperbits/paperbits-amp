@@ -9,7 +9,7 @@ const pagesPath = "amp-pages/";
 
 export class AmpPagePermalinkResolver implements IPermalinkResolver {
     constructor(
-        private readonly pageService: IPageService,
+        private readonly ampPageService: IPageService,
         private readonly localeService: ILocaleService
     ) { }
 
@@ -27,13 +27,14 @@ export class AmpPagePermalinkResolver implements IPermalinkResolver {
         }
 
         const defaultLocale = await this.localeService.getDefaultLocale();
-        let pageContract = await this.pageService.getPageByKey(targetKey, locale);
+        let pageContract = await this.ampPageService.getPageByKey(targetKey, locale);
 
         if (!pageContract) {
-            pageContract = await this.pageService.getPageByKey(targetKey, defaultLocale);
+            pageContract = await this.ampPageService.getPageByKey(targetKey, defaultLocale);
 
             if (!pageContract) {
-                throw new Error(`Could not find permalink with key ${targetKey}.`);
+                console.warn(`Could not find content item with key "${targetKey}".`);
+                return "";
             }
         }
         else if (locale && locale !== defaultLocale) {
@@ -65,7 +66,7 @@ export class AmpPagePermalinkResolver implements IPermalinkResolver {
         let hyperlinkModel: HyperlinkModel;
 
         if (hyperlinkContract.targetKey) {
-            const pageContract = await this.pageService.getPageByKey(hyperlinkContract.targetKey, locale);
+            const pageContract = await this.ampPageService.getPageByKey(hyperlinkContract.targetKey, locale);
 
             if (pageContract) {
                 return this.getHyperlink(pageContract, hyperlinkContract.target);
@@ -92,10 +93,10 @@ export class AmpPagePermalinkResolver implements IPermalinkResolver {
         }
 
         const defaultLocale = await this.localeService.getDefaultLocale();
-        let pageContract = await this.pageService.getPageByKey(targetKey, locale);
+        let pageContract = await this.ampPageService.getPageByKey(targetKey, locale);
 
         if (!pageContract) {
-            pageContract = await this.pageService.getPageByKey(targetKey, defaultLocale);
+            pageContract = await this.ampPageService.getPageByKey(targetKey, defaultLocale);
 
             if (!pageContract) {
                 console.warn(`Could create hyperlink for target with key ${targetKey} in locale ${locale}.`);
@@ -116,18 +117,18 @@ export class AmpPagePermalinkResolver implements IPermalinkResolver {
             throw new Error(`Parameter "permalink" not specified.`);
         }
 
-        let pageContract = await this.pageService.getPageByPermalink(permalink, locale);
+        let pageContract = await this.ampPageService.getPageByPermalink(permalink, locale);
 
         if (!pageContract) {
             const defaultLocale = await this.localeService.getDefaultLocale();
-            pageContract = await this.pageService.getPageByPermalink(permalink, defaultLocale);
+            pageContract = await this.ampPageService.getPageByPermalink(permalink, defaultLocale);
 
             if (!pageContract) {
                 return null;
             }
         }
 
-        const pageContent = await this.pageService.getPageContent(pageContract.key);
+        const pageContent = await this.ampPageService.getPageContent(pageContract.key);
 
         return pageContent;
     }
@@ -137,7 +138,7 @@ export class AmpPagePermalinkResolver implements IPermalinkResolver {
             throw new Error(`Parameter "permalink" not specified.`);
         }
 
-        const pageContract = await this.pageService.getPageByPermalink(permalink, locale);
+        const pageContract = await this.ampPageService.getPageByPermalink(permalink, locale);
 
         return pageContract;
     }

@@ -22,6 +22,7 @@ import { AmpAnalyticsHtmlPagePublisherPlugin } from "./ampAnalyticsPlugin";
 import { KnockoutHtmlPagePublisherPlugin } from "@paperbits/core/publishing";
 import { ContentViewModelBinder } from "@paperbits/core/content/ko";
 import { ILayoutService } from "@paperbits/common/layouts";
+import { ILocaleService } from "@paperbits/common/localization";
 
 
 export class AmpPagePublisher implements IPublisher {
@@ -34,7 +35,8 @@ export class AmpPagePublisher implements IPublisher {
         private readonly styleCompiler: StyleCompiler,
         private readonly logger: Logger,
         private readonly contentViewModelBinder: ContentViewModelBinder,
-        private readonly layoutService: ILayoutService
+        private readonly layoutService: ILayoutService,
+        private readonly localeService: ILocaleService
     ) { }
 
     public async renderPage(page: HtmlPage): Promise<string> {
@@ -71,106 +73,133 @@ export class AmpPagePublisher implements IPublisher {
     }
 
     private async renderAndUpload(settings: any, page: PageContract, globalStyleSheet: StyleSheet, indexer: SearchIndexBuilder, locale?: string): Promise<void> {
-        const siteAuthor = settings?.site?.author;
-        const siteTitle = settings?.site?.title;
-        const siteDescription = settings?.site?.description;
-        const siteKeywords = settings?.site?.keywords;
-        const siteHostname = settings?.site?.hostname;
-        const faviconSourceKey = settings?.site?.faviconSourceKey;
+        try {
+            const siteAuthor = settings?.site?.author;
+            const siteTitle = settings?.site?.title;
+            const siteDescription = settings?.site?.description;
+            const siteKeywords = settings?.site?.keywords;
+            const siteHostname = settings?.site?.hostname;
+            const faviconSourceKey = settings?.site?.faviconSourceKey;
 
-        const localePrefix = locale ? `/${locale}` : "";
-        
-        const pagePermalink = `${localePrefix}${page.permalink}`;
-        const pageContent = await this.ampPageService.getPageContent(page.key);
-        const pageUrl = siteHostname
-            ? `https://${settings?.site?.hostname}${pagePermalink}`
-            : pagePermalink;
+            const localePrefix = locale ? `/${locale}` : "";
 
-        const styleManager = new StyleManager();
-        styleManager.setStyleSheet(globalStyleSheet);
+            const pagePermalink = `${localePrefix}${page.permalink}`;
+            const pageContent = await this.ampPageService.getPageContent(page.key);
+            const pageUrl = siteHostname
+                ? `https://${settings?.site?.hostname}${pagePermalink}`
+                : pagePermalink;
 
-        const htmlPage: HtmlPage = {
-            title: [page.title, siteTitle].join(" - "),
-            description: page.description || siteDescription,
-            keywords: page.keywords || siteKeywords,
-            permalink: page.permalink,
-            url: pageUrl,
-            siteHostName: siteHostname,
-            content: pageContent,
-            author: siteAuthor,
-            template: template,
-            styleReferences: [], // No external CSS allowed in AMP.
-            socialShareData: page.socialShareData,
-            openGraph: {
-                type: page.permalink === "/" ? "website" : "article",
-                title: page.title || siteTitle,
+            const styleManager = new StyleManager();
+            styleManager.setStyleSheet(globalStyleSheet);
+
+            const htmlPage: HtmlPage = {
+                title: [page.title, siteTitle].join(" - "),
                 description: page.description || siteDescription,
-                siteName: siteTitle
-            },
-            bindingContext: {
-                styleManager: styleManager,
-                navigationPath: page.permalink,
-                template: {
-                    page: {
-                        value: pageContent,
+                keywords: page.keywords || siteKeywords,
+                permalink: page.permalink,
+                url: pageUrl,
+                siteHostName: siteHostname,
+                content: pageContent,
+                author: siteAuthor,
+                template: template,
+                styleReferences: [], // No external CSS allowed in AMP.
+                socialShareData: page.socialShareData,
+                openGraph: {
+                    type: page.permalink === "/" ? "website" : "article",
+                    title: page.title || siteTitle,
+                    description: page.description || siteDescription,
+                    siteName: siteTitle
+                },
+                bindingContext: {
+                    contentItemKey: page.key,
+                    styleManager: styleManager,
+                    navigationPath: pagePermalink,
+                    locale: locale,
+                    template: {
+                        page: {
+                            value: pageContent,
+                        }
                     }
                 }
-            }
-        };
+            };
 
-        if (page.jsonLd) {
-            let structuredData: any;
-            try {
-                structuredData = JSON.parse(page.jsonLd);
-                htmlPage.linkedData = structuredData;
-            }
-            catch (error) {
-                console.log("Unable to parse page linked data: ", error);
-            }
-        }
-
-        if (faviconSourceKey) {
-            try {
-                const media = await this.mediaService.getMediaByKey(faviconSourceKey);
-
-                if (media) {
-                    htmlPage.faviconPermalink = media.permalink;
+            if (page.jsonLd) {
+                let structuredData: any;
+                try {
+                    structuredData = JSON.parse(page.jsonLd);
+                    htmlPage.linkedData = structuredData;
+                }
+                catch (error) {
+                    console.log("Unable to parse page linked data: ", error);
                 }
             }
-            catch (error) {
-                this.logger.traceError(error, "Could not retrieve favicon.");
+
+            if (faviconSourceKey) {
+                try {
+                    const media = await this.mediaService.getMediaByKey(faviconSourceKey);
+
+                    if (media) {
+                        htmlPage.faviconPermalink = media.permalink;
+                    }
+                }
+                catch (error) {
+                    this.logger.traceError(error, "Could not retrieve favicon.");
+                }
             }
+
+            const htmlContent = await this.renderPage(htmlPage);
+
+            indexer.appendPage(htmlPage.permalink, htmlPage.title, htmlPage.description, htmlContent);
+
+            let permalink = page.permalink;
+
+            if (!permalink.endsWith("/")) {
+                permalink += "/";
+            }
+
+            permalink = `${permalink}index.html`;
+
+            const contentBytes = Utils.stringToUnit8Array(htmlContent);
+            await this.outputBlobStorage.uploadBlob(permalink, contentBytes, "text/html");
         }
-
-        const htmlContent = await this.renderPage(htmlPage);
-
-        indexer.appendPage(htmlPage.permalink, htmlPage.title, htmlPage.description, htmlContent);
-
-        let permalink = page.permalink;
-
-        if (!permalink.endsWith("/")) {
-            permalink += "/";
+        catch (error) {
+            console.error(`Unable to reneder page. Error: ${error}`);
         }
-
-        permalink = `${permalink}index.html`;
-
-        const contentBytes = Utils.stringToUnit8Array(htmlContent);
-        await this.outputBlobStorage.uploadBlob(permalink, contentBytes, "text/html");
     }
 
     public async publish(): Promise<void> {
+        const locales = await this.localeService.getLocales();
+        const defaultLocale = await this.localeService.getDefaultLocale();
+        const localizationEnabled = locales.length > 0;
         const globalStyleSheet = await this.styleCompiler.getStyleSheet();
 
         try {
-            const pages = await this.ampPageService.search("");
             const results = [];
             const settings = await this.siteService.getSiteSettings();
             const sitemapBuilder = new SitemapBuilder(settings?.site?.hostname);
             const searchIndexBuilder = new SearchIndexBuilder();
 
-            for (const page of pages) {
-                results.push(this.renderAndUpload(settings, page, globalStyleSheet, searchIndexBuilder));
-                sitemapBuilder.appendPermalink(page.permalink);
+            if (localizationEnabled) {
+                for (const locale of locales) {
+                    const localeCode = locale.code === defaultLocale
+                        ? null
+                        : locale.code;
+
+                    const pages = await this.ampPageService.search("", localeCode);
+
+                    for (const page of pages) {
+                        results.push(this.renderAndUpload(settings, page, globalStyleSheet, searchIndexBuilder, localeCode));
+                        sitemapBuilder.appendPermalink(`${localeCode || ""}${page.permalink}`);
+                    }
+                }
+            }
+            else {
+                const pages = await this.ampPageService.search("");
+
+                for (const page of pages) {
+                    results.push(this.renderAndUpload(settings, page, globalStyleSheet, searchIndexBuilder));
+                    sitemapBuilder.appendPermalink(page.permalink);
+                }
             }
 
             await Promise.all(results);

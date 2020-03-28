@@ -10,7 +10,7 @@ export class PagePublishModule implements IInjectorModule {
     public register(injector: IInjector): void {
         injector.bindToCollection("publishers", AmpPagePublisher);
         injector.bind("ampPageService", AmpPageService);
-        injector.bind("ampPagePermalinkResolver", AmpPagePermalinkResolver);
+        injector.bindToCollection("permalinkResolvers", AmpPagePermalinkResolver);
 
         injector.bindModule(new PicturePublishModule());
         injector.bindModule(new CollapsiblePanelPublishModule());
