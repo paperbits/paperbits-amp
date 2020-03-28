@@ -63,6 +63,7 @@ export class PageHost {
         styleManager.setStyleSheet(styleSheet);
 
         const bindingContext = {
+            contentItemKey: pageContract.key,
             styleManager: styleManager,
             navigationPath: route.path,
             routeKind: "page",
