@@ -84,7 +84,7 @@ export class AmpPagePublisher implements IPublisher {
             const localePrefix = locale ? `/${locale}` : "";
 
             const pagePermalink = `${localePrefix}${page.permalink}`;
-            const pageContent = await this.ampPageService.getPageContent(page.key);
+            const pageContent = await this.ampPageService.getPageContent(page.key, locale);
             const pageUrl = siteHostname
                 ? `https://${settings?.site?.hostname}${pagePermalink}`
                 : pagePermalink;
@@ -96,7 +96,7 @@ export class AmpPagePublisher implements IPublisher {
                 title: [page.title, siteTitle].join(" - "),
                 description: page.description || siteDescription,
                 keywords: page.keywords || siteKeywords,
-                permalink: page.permalink,
+                permalink: pagePermalink,
                 url: pageUrl,
                 siteHostName: siteHostname,
                 content: pageContent,
@@ -149,9 +149,9 @@ export class AmpPagePublisher implements IPublisher {
 
             const htmlContent = await this.renderPage(htmlPage);
 
-            indexer.appendPage(htmlPage.permalink, htmlPage.title, htmlPage.description, htmlContent);
+            indexer.appendPage(pagePermalink, htmlPage.title, htmlPage.description, htmlContent);
 
-            let permalink = page.permalink;
+            let permalink = pagePermalink;
 
             if (!permalink.endsWith("/")) {
                 permalink += "/";

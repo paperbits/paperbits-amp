@@ -33,7 +33,7 @@ export class AmpPagePermalinkResolver implements IPermalinkResolver {
             pageContract = await this.ampPageService.getPageByKey(targetKey, defaultLocale);
 
             if (!pageContract) {
-                console.warn(`Could not find content item with key "${targetKey}".`);
+                console.warn(`Could not find content item with key ${targetKey}.`);
                 return "";
             }
         }
