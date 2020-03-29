@@ -5,7 +5,6 @@ import {
     IPublisher,
     HtmlPage,
     HtmlPagePublisher,
-    SearchIndexBuilder,
     SitemapBuilder,
     SocialShareDataHtmlPagePublisherPlugin,
     LinkedDataHtmlPagePublisherPlugin,
@@ -36,6 +35,7 @@ export class AmpPagePublisher implements IPublisher {
         private readonly logger: Logger,
         private readonly contentViewModelBinder: ContentViewModelBinder,
         private readonly layoutService: ILayoutService,
+        private readonly sitemapBuilder: SitemapBuilder,
         private readonly localeService: ILocaleService
     ) { }
 
@@ -72,7 +72,7 @@ export class AmpPagePublisher implements IPublisher {
         });
     }
 
-    private async renderAndUpload(settings: any, page: PageContract, globalStyleSheet: StyleSheet, indexer: SearchIndexBuilder, locale?: string): Promise<void> {
+    private async renderAndUpload(settings: any, page: PageContract, globalStyleSheet: StyleSheet, locale?: string): Promise<void> {
         try {
             const siteAuthor = settings?.site?.author;
             const siteTitle = settings?.site?.title;
@@ -149,7 +149,7 @@ export class AmpPagePublisher implements IPublisher {
 
             const htmlContent = await this.renderPage(htmlPage);
 
-            indexer.appendPage(pagePermalink, htmlPage.title, htmlPage.description, htmlContent);
+            this.sitemapBuilder.appendPermalink(pagePermalink);
 
             let permalink = pagePermalink;
 
@@ -176,8 +176,6 @@ export class AmpPagePublisher implements IPublisher {
         try {
             const results = [];
             const settings = await this.siteService.getSiteSettings();
-            const sitemapBuilder = new SitemapBuilder(settings?.site?.hostname);
-            const searchIndexBuilder = new SearchIndexBuilder();
 
             if (localizationEnabled) {
                 for (const locale of locales) {
@@ -188,8 +186,7 @@ export class AmpPagePublisher implements IPublisher {
                     const pages = await this.ampPageService.search("", localeCode);
 
                     for (const page of pages) {
-                        results.push(this.renderAndUpload(settings, page, globalStyleSheet, searchIndexBuilder, localeCode));
-                        sitemapBuilder.appendPermalink(`${localeCode || ""}${page.permalink}`);
+                        results.push(this.renderAndUpload(settings, page, globalStyleSheet, localeCode));
                     }
                 }
             }
@@ -197,20 +194,11 @@ export class AmpPagePublisher implements IPublisher {
                 const pages = await this.ampPageService.search("");
 
                 for (const page of pages) {
-                    results.push(this.renderAndUpload(settings, page, globalStyleSheet, searchIndexBuilder));
-                    sitemapBuilder.appendPermalink(page.permalink);
+                    results.push(this.renderAndUpload(settings, page, globalStyleSheet));
                 }
             }
 
             await Promise.all(results);
-
-            const index = searchIndexBuilder.buildIndex();
-            const indexBytes = Utils.stringToUnit8Array(index);
-            await this.outputBlobStorage.uploadBlob("search-index.json", indexBytes, "application/json");
-
-            const sitemap = sitemapBuilder.buildSitemap();
-            const contentBytes = Utils.stringToUnit8Array(sitemap);
-            await this.outputBlobStorage.uploadBlob("sitemap.xml", contentBytes, "text/xml");
         }
         catch (error) {
             this.logger.traceError(error, "AMP page publisher");
