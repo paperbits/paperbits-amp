@@ -6,7 +6,8 @@ import { ViewManager, ViewManagerMode } from "@paperbits/common/ui";
 import { ContentViewModelBinder, ContentViewModel } from "@paperbits/core/content/ko";
 import { ILayoutService } from "@paperbits/common/layouts";
 import { IPageService } from "@paperbits/common/pages";
-import { StyleManager, StyleCompiler } from "@paperbits/common/styles";
+import { Contract } from "@paperbits/common";
+import { StyleCompiler, StyleManager } from "@paperbits/common/styles";
 
 
 @Component({
@@ -26,11 +27,11 @@ export class PageHost {
         private readonly styleCompiler: StyleCompiler
     ) {
         this.contentViewModel = ko.observable();
-        this.pagePostKey = ko.observable();
+        this.pageKey = ko.observable();
     }
 
     @Param()
-    public pagePostKey: ko.Observable<string>;
+    public pageKey: ko.Observable<string>;
 
     @OnMounted()
     public async initialize(): Promise<void> {
@@ -38,6 +39,7 @@ export class PageHost {
 
         this.router.addRouteChangeListener(this.onRouteChange);
         this.eventManager.addEventListener("onDataPush", () => this.onDataPush());
+        this.eventManager.addEventListener("onLocaleChange", () => this.onLocaleUpdate());
     }
 
     /**
@@ -49,27 +51,42 @@ export class PageHost {
         }
     }
 
+    private async onLocaleUpdate(): Promise<void> {
+        this.refreshContent();
+    }
+
     private async refreshContent(): Promise<void> {
         this.viewManager.setShutter();
 
         const route = this.router.getCurrentRoute();
-        const pageContract = await this.ampPageService.getPageByPermalink(route.path);
+        let pageContract = await this.ampPageService.getPageByPermalink(route.path);
+
+        if (!pageContract) {
+            pageContract = await this.ampPageService.getPageByPermalink("/404");
+
+            if (!pageContract) {
+                this.viewManager.removeShutter();
+                return;
+            }
+        }
+
         const pageContentContract = await this.ampPageService.getPageContent(pageContract.key);
 
-        this.pagePostKey(pageContract.key);
+        this.pageKey(pageContract.key);
 
         const styleManager = new StyleManager(this.eventManager);
         const styleSheet = await this.styleCompiler.getStyleSheet();
         styleManager.setStyleSheet(styleSheet);
 
         const bindingContext = {
+            contentItemKey: pageContract.key,
             styleManager: styleManager,
             navigationPath: route.path,
             routeKind: "page",
             template: {
                 page: {
                     value: pageContentContract,
-                    onValueUpdate: async (updatedPostContract) => {
+                    onValueUpdate: async (updatedPostContract: Contract) => {
                         await this.ampPageService.updatePageContent(pageContract.key, updatedPostContract);
                     }
                 }
