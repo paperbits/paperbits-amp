@@ -8,7 +8,8 @@ import {
     SitemapBuilder,
     SocialShareDataHtmlPagePublisherPlugin,
     LinkedDataHtmlPagePublisherPlugin,
-    OpenGraphHtmlPagePublisherPlugin
+    OpenGraphHtmlPagePublisherPlugin,
+    SearchIndexBuilder
 } from "@paperbits/common/publishing";
 import { IBlobStorage } from "@paperbits/common/persistence";
 import { IPageService, PageContract } from "@paperbits/common/pages";
@@ -36,6 +37,7 @@ export class AmpPagePublisher implements IPublisher {
         private readonly contentViewModelBinder: ContentViewModelBinder,
         private readonly layoutService: ILayoutService,
         private readonly sitemapBuilder: SitemapBuilder,
+        private readonly searchIndexBuilder: SearchIndexBuilder,
         private readonly localeService: ILocaleService
     ) { }
 
@@ -150,6 +152,7 @@ export class AmpPagePublisher implements IPublisher {
             const htmlContent = await this.renderPage(htmlPage);
 
             this.sitemapBuilder.appendPermalink(pagePermalink);
+            this.searchIndexBuilder.appendPage(pagePermalink, htmlPage.title, htmlPage.description, htmlContent);
 
             let permalink = pagePermalink;
 
