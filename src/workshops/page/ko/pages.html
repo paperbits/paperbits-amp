@@ -2,7 +2,7 @@
     <fieldset class="flex-item form">
         <div class="form-group">
             <input class="form-control" type="search" role="searchbox" 
-                data-bind="textInput: searchPattern, valueUpdate: 'keyup', focus: true" placeholder="Search pages..."
+                data-bind="textInput: searchPattern, valueUpdate: 'keyup', focus: true" placeholder="Search AMP pages..."
                 aria-label="Search pages" aria-controls="searchResult"/>
             <p id="searchResult" class="text-hide" role="region" aria-live="polite"
                 data-bind="text: `Pages found: ${pages().length}`">
@@ -13,7 +13,7 @@
     <!-- ko if: !working() && pages().length === 0 -->
 
     <!-- ko if: searchPattern() === "" -->
-    <p class="flex-item flex-item-grow text-center">It seems that you don't have pages yet. Would you like to
+    <p class="flex-item flex-item-grow text-center">It seems that you don't have AMP pages yet. Would you like to
         <a href="#" class="btn-link" data-bind="click: addPage">create one</a>?
     </p>
     <!-- /ko -->
