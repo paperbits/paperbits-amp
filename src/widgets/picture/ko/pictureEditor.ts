@@ -17,8 +17,6 @@ import { ChangeRateLimit } from "@paperbits/common/ko/consts";
 })
 export class PictureEditor {
     public readonly caption: ko.Observable<string>;
-    public readonly layout: ko.Observable<string>;
-    public readonly animation: ko.Observable<string>;
     public readonly sourceKey: ko.Observable<string>;
     public readonly background: ko.Observable<BackgroundModel>;
     public readonly hyperlink: ko.Observable<HyperlinkModel>;
@@ -32,9 +30,7 @@ export class PictureEditor {
         private readonly mediaPermalinkResolver: IPermalinkResolver,
     ) {
         this.caption = ko.observable<string>();
-        this.layout = ko.observable<string>();
         this.hyperlink = ko.observable<HyperlinkModel>();
-        this.animation = ko.observable<string>();
         this.sourceKey = ko.observable<string>();
         this.background = ko.observable();
         this.hyperlinkTitle = ko.computed<string>(() => this.hyperlink() ? this.hyperlink().title : "Add a link...");
@@ -70,9 +66,7 @@ export class PictureEditor {
         }
 
         this.caption.extend(ChangeRateLimit).subscribe(this.applyChanges);
-        this.layout.extend(ChangeRateLimit).subscribe(this.applyChanges);
         this.hyperlink.extend(ChangeRateLimit).subscribe(this.applyChanges);
-        this.animation.extend(ChangeRateLimit).subscribe(this.applyChanges);
         this.sizeConfig.extend(ChangeRateLimit).subscribe(this.applyChanges);
         this.appearanceStyle.extend(ChangeRateLimit).subscribe(this.applyChanges);
     }
@@ -125,7 +119,8 @@ export class PictureEditor {
     }
 
     public onSizeChange(sizeConfig: SizeStylePluginConfig): void {
-        this.sizeConfig(sizeConfig);
+        this.model.width = <number>sizeConfig.width;
+        this.model.height = <number>sizeConfig.height;
         this.applyChanges();
     }
 }
