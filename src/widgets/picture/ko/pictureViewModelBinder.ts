@@ -33,8 +33,8 @@ export class PictureViewModelBinder implements ViewModelBinder<PictureModel, Pic
         viewModel.sourceUrl(sourceUrl || "https://amp.dev/static/inline-examples/images/sea.jpg");
         viewModel.caption(model.caption);
         viewModel.hyperlink(model.hyperlink);
-        viewModel.width(model.width || 100);
-        viewModel.height(model.height || 100);
+        viewModel.width(model.width || 300);
+        viewModel.height(model.height || 200);
 
         if (model.styles) {
             viewModel.styles(await this.styleCompiler.getStyleModelAsync(model.styles, bindingContext?.styleManager));
