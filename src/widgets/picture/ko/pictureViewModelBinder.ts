@@ -30,7 +30,7 @@ export class PictureViewModelBinder implements ViewModelBinder<PictureModel, Pic
             }
         }
 
-        viewModel.sourceUrl(sourceUrl || "https://amp.dev/static/inline-examples/images/sea.jpg");
+        viewModel.sourceUrl(sourceUrl);
         viewModel.caption(model.caption);
         viewModel.hyperlink(model.hyperlink);
         viewModel.width(model.width || 100);

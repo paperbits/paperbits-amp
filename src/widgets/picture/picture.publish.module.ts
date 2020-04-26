@@ -5,7 +5,7 @@ import { PictureViewModel } from "./ko/pictureViewModel";
 
 export class PicturePublishModule implements IInjectorModule {
     public register(injector: IInjector): void {        
-        injector.bind("picture", PictureViewModel);
+        injector.bind("ampPicture", PictureViewModel);
         injector.bindToCollection("modelBinders", PictureModelBinder);
         injector.bindToCollection("viewModelBinders", PictureViewModelBinder);
     }
