@@ -50,7 +50,8 @@ export class PictureHandlers implements IWidgetHandler, IContentDropHandler {
     }
 
     public getContentDescriptorFromDataTransfer(dataTransfer: IDataTransfer): IContentDescriptor {
-        if (!dataTransfer.name || !PictureHandlers.imageFileExtensions.some(e => dataTransfer.name.endsWith(e))) {
+        if (!dataTransfer.name || !PictureHandlers.imageFileExtensions.some(e => 
+            dataTransfer.name.toLowerCase().endsWith(e.toLowerCase()))) {
             return null;
         }
 
@@ -75,6 +76,7 @@ export class PictureHandlers implements IWidgetHandler, IContentDropHandler {
     }
 
     public static isMediaFile(media: MediaContract): boolean {
-        return (media.mimeType && media.mimeType.indexOf("image") !== -1) || (media.fileName && this.imageFileExtensions.some(e => media.fileName.endsWith(e)));
+        return (media.mimeType && media.mimeType.indexOf("image") !== -1) || (media.fileName &&
+            this.imageFileExtensions.some(e => media.fileName.toLowerCase().endsWith(e.toLowerCase())));
     }
 }
