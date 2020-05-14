@@ -166,7 +166,7 @@ export class AmpPagePublisher implements IPublisher {
             await this.outputBlobStorage.uploadBlob(permalink, contentBytes, "text/html");
         }
         catch (error) {
-            console.error(`Unable to reneder page. Error: ${error}`);
+            console.error(`Unable to reneder page. ${error}`);
         }
     }
 
