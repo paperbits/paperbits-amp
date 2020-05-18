@@ -13,7 +13,7 @@ import {
 } from "@paperbits/common/publishing";
 import { IBlobStorage } from "@paperbits/common/persistence";
 import { IPageService, PageContract } from "@paperbits/common/pages";
-import { ISiteService } from "@paperbits/common/sites";
+import { ISiteService, SiteSettingsContract } from "@paperbits/common/sites";
 import { Logger } from "@paperbits/common/logging";
 import { IMediaService } from "@paperbits/common/media";
 import { StyleManager, StyleCompiler, StyleSheet } from "@paperbits/common/styles";
@@ -74,21 +74,21 @@ export class AmpPagePublisher implements IPublisher {
         });
     }
 
-    private async renderAndUpload(settings: any, page: PageContract, globalStyleSheet: StyleSheet, locale?: string): Promise<void> {
+    private async renderAndUpload(settings: SiteSettingsContract, page: PageContract, globalStyleSheet: StyleSheet, locale?: string): Promise<void> {
         try {
-            const siteAuthor = settings?.site?.author;
-            const siteTitle = settings?.site?.title;
-            const siteDescription = settings?.site?.description;
-            const siteKeywords = settings?.site?.keywords;
-            const siteHostname = settings?.site?.hostname;
-            const faviconSourceKey = settings?.site?.faviconSourceKey;
+            const siteAuthor = settings?.author;
+            const siteTitle = settings?.title;
+            const siteDescription = settings?.description;
+            const siteKeywords = settings?.keywords;
+            const siteHostname = settings?.hostname;
+            const faviconSourceKey = settings?.faviconSourceKey;
 
             const localePrefix = locale ? `/${locale}` : "";
 
             const pagePermalink = `${localePrefix}${page.permalink}`;
             const pageContent = await this.ampPageService.getPageContent(page.key, locale);
             const pageUrl = siteHostname
-                ? `https://${settings?.site?.hostname}${pagePermalink}`
+                ? `https://${settings?.hostname}${pagePermalink}`
                 : pagePermalink;
 
             const styleManager = new StyleManager();

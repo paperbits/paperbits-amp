@@ -1,14 +1,15 @@
 import { HtmlPagePublisherPlugin } from "@paperbits/common/publishing";
 import { ISiteService } from "@paperbits/common/sites";
+import { GoogleTagManagerSettings } from "./gtmSettings";
 
 
 export class AmpAnalyticsHtmlPagePublisherPlugin implements HtmlPagePublisherPlugin {
     constructor(private readonly siteService: ISiteService) { }
 
     public async apply(document: Document): Promise<void> {
-        const settings = await this.siteService.getSiteSettings();
+        const settings = await this.siteService.getIntegrationSettings<GoogleTagManagerSettings>("googleTagManager");
 
-        if (!settings?.integration?.googleTagManager) {
+        if (!settings) {
             return;
         }
 
@@ -18,7 +19,7 @@ export class AmpAnalyticsHtmlPagePublisherPlugin implements HtmlPagePublisherPlu
         headScriptElement.setAttribute("custom-element", "amp-analytics");
         document.head.insertAdjacentElement("afterbegin", headScriptElement);
 
-        const gtmSettings = settings.integration.googleTagManager;
+        const gtmSettings = settings;
         const containerId = gtmSettings.ampContainerId || gtmSettings.containerId;
 
         const ampAnalyticsElement = document.createElement("amp-analytics");
