@@ -7,9 +7,10 @@ export class AmpAnalyticsHtmlPagePublisherPlugin implements HtmlPagePublisherPlu
     constructor(private readonly siteService: ISiteService) { }
 
     public async apply(document: Document): Promise<void> {
-        const settings = await this.siteService.getIntegrationSettings<GoogleTagManagerSettings>("googleTagManager");
+        const settings = await this.siteService.getSettings<any>();
+        const gtmSettings: GoogleTagManagerSettings = settings?.integration?.googleTagManager;
 
-        if (!settings) {
+        if (!gtmSettings) {
             return;
         }
 
@@ -19,7 +20,6 @@ export class AmpAnalyticsHtmlPagePublisherPlugin implements HtmlPagePublisherPlu
         headScriptElement.setAttribute("custom-element", "amp-analytics");
         document.head.insertAdjacentElement("afterbegin", headScriptElement);
 
-        const gtmSettings = settings;
         const containerId = gtmSettings.ampContainerId || gtmSettings.containerId;
 
         const ampAnalyticsElement = document.createElement("amp-analytics");

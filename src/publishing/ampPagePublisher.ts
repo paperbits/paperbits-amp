@@ -178,7 +178,8 @@ export class AmpPagePublisher implements IPublisher {
 
         try {
             const results = [];
-            const settings = await this.siteService.getSiteSettings();
+            const settings = await this.siteService.getSettings<any>();
+            const siteSettings: SiteSettingsContract = settings.site;
 
             if (localizationEnabled) {
                 for (const locale of locales) {
@@ -189,7 +190,7 @@ export class AmpPagePublisher implements IPublisher {
                     const pages = await this.ampPageService.search("", localeCode);
 
                     for (const page of pages) {
-                        results.push(this.renderAndUpload(settings, page, globalStyleSheet, localeCode));
+                        results.push(this.renderAndUpload(siteSettings, page, globalStyleSheet, localeCode));
                     }
                 }
             }
@@ -197,7 +198,7 @@ export class AmpPagePublisher implements IPublisher {
                 const pages = await this.ampPageService.search("");
 
                 for (const page of pages) {
-                    results.push(this.renderAndUpload(settings, page, globalStyleSheet));
+                    results.push(this.renderAndUpload(siteSettings, page, globalStyleSheet));
                 }
             }
 
