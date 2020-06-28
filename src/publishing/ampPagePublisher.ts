@@ -1,4 +1,5 @@
 import * as Utils from "@paperbits/common/utils";
+import parallel from "await-parallel-limit";
 import template from "./page.html";
 import { minify } from "html-minifier-terser";
 import {
@@ -132,7 +133,7 @@ export class AmpPagePublisher implements IPublisher {
                     htmlPage.linkedData = structuredData;
                 }
                 catch (error) {
-                    console.log("Unable to parse page linked data: ", error);
+                    console.log("Unable to parse page linked data.");
                 }
             }
 
@@ -177,7 +178,7 @@ export class AmpPagePublisher implements IPublisher {
         const globalStyleSheet = await this.styleCompiler.getStyleSheet();
 
         try {
-            const results = [];
+            const tasks = [];
             const settings = await this.siteService.getSettings<any>();
             const siteSettings: SiteSettingsContract = settings.site;
 
@@ -190,7 +191,7 @@ export class AmpPagePublisher implements IPublisher {
                     const pages = await this.ampPageService.search("", localeCode);
 
                     for (const page of pages) {
-                        results.push(this.renderAndUpload(siteSettings, page, globalStyleSheet, localeCode));
+                        tasks.push(() => this.renderAndUpload(siteSettings, page, globalStyleSheet, localeCode));
                     }
                 }
             }
@@ -198,11 +199,11 @@ export class AmpPagePublisher implements IPublisher {
                 const pages = await this.ampPageService.search("");
 
                 for (const page of pages) {
-                    results.push(this.renderAndUpload(siteSettings, page, globalStyleSheet));
+                    tasks.push(() => this.renderAndUpload(siteSettings, page, globalStyleSheet));
                 }
             }
 
-            await Promise.all(results);
+            await parallel(tasks, 7);
         }
         catch (error) {
             this.logger.traceError(error, "AMP page publisher");

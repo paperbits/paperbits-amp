@@ -105,7 +105,7 @@ export class AmpPagePermalinkResolver implements IPermalinkResolver {
             pageContract = await this.ampPageService.getPageByKey(targetKey, defaultLocale);
 
             if (!pageContract) {
-                console.warn(`Could create hyperlink for target with key ${targetKey} in locale ${locale}.`);
+                console.warn(`Could create hyperlink for target with key ${targetKey} in locale ${defaultLocale}.`);
                 return null;
             }
         }
