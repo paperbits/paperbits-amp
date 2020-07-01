@@ -5,7 +5,7 @@ import { Component, OnMounted, Param, Event, OnDestroyed } from "@paperbits/comm
 import { ContainerStylePluginConfig, BackgroundStylePluginConfig, SizeStylePluginConfig } from "@paperbits/styles/contracts";
 import { ViewManager } from "@paperbits/common/ui";
 import { EventManager, CommonEvents } from "@paperbits/common/events";
-import { StyleHelper } from "@paperbits/common/styles";
+import { StyleHelper } from "@paperbits/styles";
 
 @Component({
     selector: "amp-collapsible-panel-editor",
