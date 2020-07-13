@@ -43,7 +43,7 @@ export class AmpPagePublisher implements IPublisher {
     ) { }
 
     public async renderPage(page: HtmlPage): Promise<string> {
-        this.logger.traceEvent(`Publishing page ${page.title}...`);
+        this.logger.trackEvent(`Publishing page ${page.title}...`);
 
         const overridePlugins = [
             new KnockoutHtmlPagePublisherPlugin(this.contentViewModelBinder, this.layoutService),
@@ -146,7 +146,7 @@ export class AmpPagePublisher implements IPublisher {
                     }
                 }
                 catch (error) {
-                    this.logger.traceError(error, "Could not retrieve favicon.");
+                    this.logger.trackError("Could not retrieve favicon.", error);
                 }
             }
 
@@ -206,7 +206,7 @@ export class AmpPagePublisher implements IPublisher {
             await parallel(tasks, 7);
         }
         catch (error) {
-            this.logger.traceError(error, "AMP page publisher");
+            this.logger.trackError(`Unable to complete AMP pages publishing.`, error);
         }
     }
 }
