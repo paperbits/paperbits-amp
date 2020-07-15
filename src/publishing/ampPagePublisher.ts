@@ -45,37 +45,47 @@ export class AmpPagePublisher implements IPublisher {
     public async renderPage(page: HtmlPage): Promise<string> {
         this.logger.trackEvent("Publishing", { message: `Publishing page ${page.title}...` });
 
-        const overridePlugins = [
-            new KnockoutHtmlPagePublisherPlugin(this.contentViewModelBinder, this.layoutService),
-            new SocialShareDataHtmlPagePublisherPlugin(this.mediaService),
-            new LinkedDataHtmlPagePublisherPlugin(this.siteService),
-            new OpenGraphHtmlPagePublisherPlugin(this.mediaService),
-            new AmpStylesheetPublisherPlugin(),
-            new AmpAnalyticsHtmlPagePublisherPlugin(this.siteService)
-        ];
+        try {
+            const overridePlugins = [
+                new KnockoutHtmlPagePublisherPlugin(this.contentViewModelBinder, this.layoutService),
+                new SocialShareDataHtmlPagePublisherPlugin(this.mediaService),
+                new LinkedDataHtmlPagePublisherPlugin(this.siteService),
+                new OpenGraphHtmlPagePublisherPlugin(this.mediaService),
+                new AmpStylesheetPublisherPlugin(),
+                new AmpAnalyticsHtmlPagePublisherPlugin(this.siteService)
+            ];
 
-        const htmlContent = await this.htmlPagePublisher.renderHtml(page, overridePlugins);
+            const htmlContent = await this.htmlPagePublisher.renderHtml(page, overridePlugins);
 
-        return minify(htmlContent, {
-            caseSensitive: true,
-            collapseBooleanAttributes: true,
-            collapseInlineTagWhitespace: false,
-            collapseWhitespace: true,
-            html5: true,
-            minifyCSS: true,
-            preserveLineBreaks: false,
-            removeComments: true,
-            removeEmptyAttributes: true,
-            removeOptionalTags: false,
-            removeRedundantAttributes: false,
-            removeScriptTypeAttributes: false,
-            removeStyleLinkTypeAttributes: false,
-            removeTagWhitespace: false,
-            removeAttributeQuotes: false
-        });
+            return minify(htmlContent, {
+                caseSensitive: true,
+                collapseBooleanAttributes: true,
+                collapseInlineTagWhitespace: false,
+                collapseWhitespace: true,
+                html5: true,
+                minifyCSS: true,
+                preserveLineBreaks: false,
+                removeComments: true,
+                removeEmptyAttributes: true,
+                removeOptionalTags: false,
+                removeRedundantAttributes: false,
+                removeScriptTypeAttributes: false,
+                removeStyleLinkTypeAttributes: false,
+                removeTagWhitespace: false,
+                removeAttributeQuotes: false
+            });
+        }
+        catch (error) {
+            throw new Error(`Unable to render page "${page.title}": ${error.stack || error.message}`);
+        }
     }
 
     private async renderAndUpload(settings: SiteSettingsContract, page: PageContract, globalStyleSheet: StyleSheet, locale?: string): Promise<void> {
+        if (!page.permalink) {
+            this.logger.trackEvent("Publishing", { message: `Skipping page with no permalink specified: "${page.title}".` });
+            return;
+        }
+
         try {
             const siteAuthor = settings?.author;
             const siteTitle = settings?.title;
@@ -83,9 +93,7 @@ export class AmpPagePublisher implements IPublisher {
             const siteKeywords = settings?.keywords;
             const siteHostname = settings?.hostname;
             const faviconSourceKey = settings?.faviconSourceKey;
-
             const localePrefix = locale ? `/${locale}` : "";
-
             const pagePermalink = `${localePrefix}${page.permalink}`;
             const pageContent = await this.ampPageService.getPageContent(page.key, locale);
             const pageUrl = siteHostname
@@ -167,7 +175,7 @@ export class AmpPagePublisher implements IPublisher {
             await this.outputBlobStorage.uploadBlob(permalink, contentBytes, "text/html");
         }
         catch (error) {
-            throw new Error(`Unable to reneder AMP page: ${error.stack | error.message}`);
+            throw new Error(`Unable to publish AMP page "${page.title}": ${error.stack | error.message}`);
         }
     }
 
