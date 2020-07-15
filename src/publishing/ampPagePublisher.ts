@@ -167,7 +167,7 @@ export class AmpPagePublisher implements IPublisher {
             await this.outputBlobStorage.uploadBlob(permalink, contentBytes, "text/html");
         }
         catch (error) {
-            throw new Error(`Unable to reneder AMP page. ${error}`);
+            throw new Error(`Unable to reneder AMP page: ${error.stack | error.message}`);
         }
     }
 
@@ -206,7 +206,7 @@ export class AmpPagePublisher implements IPublisher {
             await parallel(tasks, 7);
         }
         catch (error) {
-            throw new Error(`Unable to complete AMP pages publishing. ${error}`);
+            throw new Error(`Unable to complete AMP pages publishing. ${error.stack || error.message}`);
         }
     }
 }
