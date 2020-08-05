@@ -53,21 +53,13 @@ export class PagesWorkshop {
 
             if (current) {
                 this.selectedPage(current);
-                current.isSelected(true);
             }
         }
         this.working(false);
     }
 
     public selectPage(pageItem: PageItem): void {
-        const prev = this.selectedPage();
-
-        if (prev) {
-            prev.isSelected(false);
-        }
-
         this.selectedPage(pageItem);
-        pageItem.isSelected(true);
 
         const view: View = {
             heading: "AMP page",
@@ -100,5 +92,10 @@ export class PagesWorkshop {
         this.selectPage(pageItem);
 
         this.working(false);
+    }
+
+    public isSelected(page: PageItem): boolean {
+        const selectedPage = this.selectedPage();
+        return selectedPage?.key === page.key;
     }
 }
