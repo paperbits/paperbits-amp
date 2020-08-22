@@ -5,13 +5,13 @@
     <a data-bind="hyperlink: hyperlink">
         <amp-img
             data-bind="styled: styles, attr: { src: sourceUrl, alt: caption }, size: { width: width, height: height }"
-            src="https://" width="200" height="100" layout="fixed">
+            src="https://" width="200" height="100" layout="intrinsic">
         </amp-img>
     </a>
     <!-- /ko -->
     <!-- ko ifnot: hyperlink -->
     <amp-img data-bind="styled: styles, attr: { src: sourceUrl, alt: caption }, size: { width: width, height: height }"
-        src="https://" width="200" height="100" layout="fixed">
+        src="https://" width="200" height="100" layout="intrinsic">
     </amp-img>
     <!-- /ko -->
 
