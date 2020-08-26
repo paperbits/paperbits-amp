@@ -1,7 +1,7 @@
 import { IInjectorModule, IInjector } from "@paperbits/common/injection";
 import { AmpPagePublisher } from "./publishing/ampPagePublisher";
 import { AmpPageService } from "./services/page";
-import { PicturePublishModule } from "./widgets/picture/ko";
+import { PicturePublishModule } from "./widgets/picture";
 import { CollapsiblePanelPublishModule } from "./widgets/collapsible-panel";
 import { AmpPagePermalinkResolver } from "./pagePermalinkResolver";
 

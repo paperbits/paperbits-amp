@@ -4,7 +4,8 @@ import { PictureEditor } from "./ko/pictureEditor";
 import { PictureHandlers } from "./pictureHandlers";
 import { IStyleGroup } from "@paperbits/common/styles";
 import { PictureViewModel, PictureViewModelBinder } from "./ko";
-import { PictureModelBinder } from ".";
+import { PictureModelBinder } from "./pictureModelBinder";
+import "../../bindingHandlers/bindingHandlers.ampSize";
 
 export class PictureDesignModule implements IInjectorModule {
     public register(injector: IInjector): void {

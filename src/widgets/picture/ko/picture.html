@@ -1,16 +1,17 @@
-<div>
+<div class="inline-block">
     <!-- ko ifnot: working -->
 
     <!-- ko if: hyperlink -->
     <a data-bind="hyperlink: hyperlink">
         <amp-img
-            data-bind="styled: styles, attr: { src: sourceUrl, alt: caption }, size: { width: width, height: height }"
+            data-bind="styled: styles, attr: { src: sourceUrl, alt: caption }, ampSize: { width: width, height: height }"
             src="https://" width="200" height="100" layout="intrinsic">
         </amp-img>
     </a>
     <!-- /ko -->
     <!-- ko ifnot: hyperlink -->
-    <amp-img data-bind="styled: styles, attr: { src: sourceUrl, alt: caption }, size: { width: width, height: height }"
+    <amp-img
+        data-bind="styled: styles, attr: { src: sourceUrl, alt: caption }, ampSize: { width: width, height: height }"
         src="https://" width="200" height="100" layout="intrinsic">
     </amp-img>
     <!-- /ko -->

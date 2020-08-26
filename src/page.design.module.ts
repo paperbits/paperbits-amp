@@ -5,7 +5,7 @@ import { PageDetailsWorkshop } from "./workshops/page/ko/pageDetails";
 import { PageSelector } from "./workshops/page/ko/pageSelector";
 import { PageHost } from "./workshops/page/ko/pageHost";
 import { AmpPageService, AmpPageHyperlinkProvider } from "./services/page";
-import { PictureDesignModule } from "./widgets/picture/ko";
+import { PictureDesignModule } from "./widgets/picture";
 import { CollapsiblePanelDesignModule } from "./widgets/collapsible-panel";
 import { AmpPagePermalinkResolver } from "./pagePermalinkResolver";
 

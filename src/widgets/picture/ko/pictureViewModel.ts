@@ -14,12 +14,12 @@ export class PictureViewModel {
     public sourceUrl: ko.Observable<string>;
     public caption: ko.Observable<string>;
     public hyperlink: ko.Observable<HyperlinkModel>;
-    public width: ko.Observable<number>;
-    public height: ko.Observable<number>;
+    public readonly width: ko.Observable<number>;
+    public readonly height: ko.Observable<number>;
     public styles: ko.Observable<StyleModel>;
 
     constructor() {
-        this.working = ko.observable<boolean>();
+        this.working = ko.observable<boolean>(true);
         this.sourceUrl = ko.observable<string>();
         this.caption = ko.observable<string>();
         this.hyperlink = ko.observable<HyperlinkModel>();
@@ -33,10 +33,15 @@ export class PictureViewModel {
     @OnMounted()
     public async initialize(): Promise<void> {
         this.sourceUrl.subscribe(this.reloadAmpComponent);
+        this.width.subscribe(this.reloadAmpComponent);
+        this.height.subscribe(this.reloadAmpComponent);
+        this.working(false);
     }
 
     private reloadAmpComponent(): void {
         this.working(true);
+
+       //  setTimeout(() => { this.working(false); }, 1000);
         this.working(false);
     }
 }
