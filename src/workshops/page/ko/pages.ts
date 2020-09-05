@@ -1,11 +1,11 @@
 ﻿import * as ko from "knockout";
 import template from "./pages.html";
-import { IPageService } from "@paperbits/common/pages";
-import { Router } from "@paperbits/common/routing";
+import { IPageService, PageContract } from "@paperbits/common/pages";
 import { ViewManager, View } from "@paperbits/common/ui";
 import { Component, OnMounted } from "@paperbits/common/ko/decorators";
 import { PageItem } from "./pageItem";
 import { ChangeRateLimit } from "@paperbits/common/ko/consts";
+import { Query, Operator } from "@paperbits/common/persistence";
 
 
 @Component({
@@ -13,6 +13,8 @@ import { ChangeRateLimit } from "@paperbits/common/ko/consts";
     template: template
 })
 export class PagesWorkshop {
+    private nextPageQuery: Query<PageContract>;
+
     public readonly searchPattern: ko.Observable<string>;
     public readonly pages: ko.ObservableArray<PageItem>;
     public readonly working: ko.Observable<boolean>;
@@ -20,13 +22,12 @@ export class PagesWorkshop {
 
     constructor(
         private readonly ampPageService: IPageService,
-        private readonly router: Router,
         private readonly viewManager: ViewManager
     ) {
         this.pages = ko.observableArray<PageItem>();
         this.selectedPage = ko.observable<PageItem>();
         this.searchPattern = ko.observable<string>("");
-        this.working = ko.observable(true);
+        this.working = ko.observable(false);
     }
 
     @OnMounted()
@@ -39,22 +40,33 @@ export class PagesWorkshop {
     }
 
     private async searchPages(searchPattern: string = ""): Promise<void> {
-        this.working(true);
         this.pages([]);
 
-        const pages = await this.ampPageService.search(searchPattern);
-        const pageItems = pages.map(page => new PageItem(page));
+        const query = Query
+            .from<PageContract>()
+            .orderBy(`title`);
 
-        this.pages(pageItems);
-
-        if (!this.selectedPage()) {
-            const currentPermalink = this.router.getPath();
-            const current = pageItems.find(item => item.permalink() === currentPermalink);
-
-            if (current) {
-                this.selectedPage(current);
-            }
+        if (searchPattern) {
+            query.where(`title`, Operator.contains, searchPattern);
         }
+
+        this.nextPageQuery = query;
+        await this.loadNextPage();
+    }
+
+    public async loadNextPage(): Promise<void> {
+        if (!this.nextPageQuery || this.working()) {
+            return;
+        }
+
+        this.working(true);
+
+        const pageOfResults = await this.ampPageService.search2(this.nextPageQuery);
+        this.nextPageQuery = pageOfResults.nextPage;
+
+        const pageItems = pageOfResults.value.map(page => new PageItem(page));
+        this.pages.push(...pageItems);
+
         this.working(false);
     }
 
@@ -85,7 +97,8 @@ export class PagesWorkshop {
         this.working(true);
 
         const pageUrl = "/new-amp-page";
-        const pageContract = await this.ampPageService.createPage(pageUrl, "New AMP page", "", "");
+
+        const pageContract = await this.ampPageService.createPage(pageUrl, "New page", "", "");
         const pageItem = new PageItem(pageContract);
 
         this.pages.push(pageItem);
