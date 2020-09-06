@@ -68,7 +68,7 @@ export class PageSelector implements IResourceSelector<HyperlinkModel> {
 
         this.working(true);
 
-        const pageOfResults = await this.ampPageService.search2(this.nextPageQuery);
+        const pageOfResults = await this.ampPageService.search(this.nextPageQuery);
         this.nextPageQuery = pageOfResults.nextPage;
 
         const pageItems = pageOfResults.value.map(page => new PageItem(page));
