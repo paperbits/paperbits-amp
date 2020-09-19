@@ -6,8 +6,8 @@
     <fieldset class="flex-item form">
         <div class="form-group">
             <input class="form-control" type="search" role="searchbox"
-                data-bind="textInput: searchPattern, valueUpdate: 'keyup', focus: true" placeholder="Search AMP pages..."
-                aria-label="Search pages" aria-controls="searchResult" />
+                data-bind="textInput: searchPattern, valueUpdate: 'keyup', focus: true"
+                placeholder="Search AMP pages..." aria-label="Search pages" aria-controls="searchResult" />
             <p id="searchResult" class="text-hide" role="region" aria-live="polite"
                 data-bind="text: `Pages found: ${pages().length}`">
             </p>
@@ -29,10 +29,9 @@
     </div>
     <!-- /ko -->
 
-    <div class="flex flex-column flex-item flex-item-grow list"
-        data-bind="scrollable: { onEndReach: $component.loadNextPage }">
+    <div class="flex flex-column flex-item flex-item-grow list" role="list" data-bind="scrollable: true">
         <!-- ko foreach: { data: pages, as: 'page' } -->
-        <div class="list-item-group">
+        <div class="list-item-group" role="presentation">
             <a href="#" role="listitem" class="list-item"
                 data-bind="css: { selected: $component.isSelected(page) }, click: $component.selectPage, attr: { title: page.title }">
                 <i class="paperbits-icon paperbits-single-content-03"></i>
@@ -52,6 +51,9 @@
         <!-- /ko -->
         <!-- ko if: $component.working() -->
         <spinner></spinner>
+        <!-- /ko -->
+        <!-- ko ifnot: $component.working -->
+        <div class="list-edge" data-bind="whenInView: $component.loadNextPage"></div>
         <!-- /ko -->
     </div>
 </div>

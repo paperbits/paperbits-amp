@@ -179,16 +179,12 @@ export class AmpPagePublisher implements IPublisher {
         }
     }
 
-
     private async publishNonLocalized(siteSettings: SiteSettingsContract, globalStyleSheet: StyleSheet): Promise<void> {
-        let pagesOfResults: Page<PageContract[]>;
-        let nextPageQuery: Query<PageContract> = Query.from<PageContract>();
+        const query: Query<PageContract> = Query.from<PageContract>();
+        let pagesOfResults = await this.ampPageService.search(query);
 
         do {
             const tasks = [];
-            pagesOfResults = await this.ampPageService.search(nextPageQuery);
-            nextPageQuery = pagesOfResults.nextPage;
-
             const pages = pagesOfResults.value;
 
             for (const page of pages) {
@@ -196,8 +192,15 @@ export class AmpPagePublisher implements IPublisher {
             }
 
             await parallel(tasks, 7);
+
+            if (pagesOfResults.takeNext) {
+                pagesOfResults = await pagesOfResults.takeNext();
+            }
+            else {
+                pagesOfResults = null;
+            }
         }
-        while (nextPageQuery);
+        while (pagesOfResults);
     }
 
     private async publishLocalized(locales: LocaleModel[], siteSettings: SiteSettingsContract, globalStyleSheet: StyleSheet): Promise<void> {
@@ -208,14 +211,11 @@ export class AmpPagePublisher implements IPublisher {
                 ? null
                 : locale.code;
 
-            let pagesOfResults: Page<PageContract[]>;
-            let nextPageQuery: Query<PageContract> = Query.from<PageContract>();
+            const query: Query<PageContract> = Query.from<PageContract>();
+            let pagesOfResults = await this.ampPageService.search(query, localeCode);
 
             do {
                 const tasks = [];
-                pagesOfResults = await this.ampPageService.search(nextPageQuery, localeCode);
-                nextPageQuery = pagesOfResults.nextPage;
-
                 const pages = pagesOfResults.value;
 
                 for (const page of pages) {
@@ -223,8 +223,15 @@ export class AmpPagePublisher implements IPublisher {
                 }
 
                 await parallel(tasks, 7);
+
+                if (pagesOfResults.takeNext) {
+                    pagesOfResults = await pagesOfResults.takeNext();
+                }
+                else {
+                    pagesOfResults = null;
+                }
             }
-            while (nextPageQuery);
+            while (pagesOfResults);
         }
     }
 

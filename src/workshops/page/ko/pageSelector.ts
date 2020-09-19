@@ -7,7 +7,7 @@ import { Component, Param, Event, OnMounted } from "@paperbits/common/ko/decorat
 import { HyperlinkModel } from "@paperbits/common/permalinks";
 import { AnchorUtils } from "@paperbits/core/text/anchorUtils";
 import { ChangeRateLimit } from "@paperbits/common/ko/consts";
-import { Query, Operator } from "@paperbits/common/persistence";
+import { Query, Operator, Page } from "@paperbits/common/persistence";
 
 @Component({
     selector: "amp-page-selector",
@@ -15,7 +15,7 @@ import { Query, Operator } from "@paperbits/common/persistence";
 })
 export class PageSelector implements IResourceSelector<HyperlinkModel> {
     private preSelectedModel: HyperlinkModel;
-    private nextPageQuery: Query<PageContract>;
+    private currentPage: Page<PageContract>;
 
     public readonly searchPattern: ko.Observable<string>;
     public readonly pages: ko.ObservableArray<PageItem>;
@@ -47,6 +47,8 @@ export class PageSelector implements IResourceSelector<HyperlinkModel> {
     }
 
     public async searchPages(searchPattern: string = ""): Promise<void> {
+        this.working(true);
+
         this.pages([]);
 
         const query = Query
@@ -57,21 +59,25 @@ export class PageSelector implements IResourceSelector<HyperlinkModel> {
             query.where(`title`, Operator.contains, searchPattern);
         }
 
-        this.nextPageQuery = query;
-        await this.loadNextPage();
+        const pageOfResults = await this.ampPageService.search(query);
+        this.currentPage = pageOfResults;
+
+        const pageItems = pageOfResults.value.map(page => new PageItem(page));
+        this.pages.push(...pageItems);
+
+        this.working(false);
     }
 
     public async loadNextPage(): Promise<void> {
-        if (!this.nextPageQuery || this.working()) {
+        if (!this.currentPage?.takeNext) {
             return;
         }
 
         this.working(true);
 
-        const pageOfResults = await this.ampPageService.search(this.nextPageQuery);
-        this.nextPageQuery = pageOfResults.nextPage;
+        this.currentPage = await this.currentPage.takeNext();
 
-        const pageItems = pageOfResults.value.map(page => new PageItem(page));
+        const pageItems = this.currentPage.value.map(page => new PageItem(page));
         this.pages.push(...pageItems);
 
         if (!this.selectedPage() && this.preSelectedModel) {
