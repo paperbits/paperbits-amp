@@ -30,13 +30,13 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">
+                <label id="linkToLabel" class="form-label">
                     Link to
-                    <button class="btn btn-info" type="button"
+                    <button class="btn btn-info" type="button" aria-hidden="true" role="tooltip"
                         data-bind="tooltip: 'A link to be navigated on click.'"></button>
                 </label>
                 <div class="input-group">
-                    <a href="#" class="form-control"
+                    <a href="#" aria-labelledby="linkToLabel" class="form-control" role="button"
                         data-bind="text: hyperlinkTitle, balloon: { component: { name: 'hyperlink-selector', params: { hyperlink: $component.hyperlink, onChange: $component.onHyperlinkChange } } }">
                     </a>
                     <div class="input-group-addon">
