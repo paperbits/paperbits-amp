@@ -1,7 +1,6 @@
 import * as Utils from "@paperbits/common/utils";
 import parallel from "await-parallel-limit";
 import template from "./page.html";
-import { minify } from "html-minifier-terser";
 import {
     IPublisher,
     HtmlPage,
@@ -12,7 +11,7 @@ import {
     OpenGraphHtmlPagePublisherPlugin,
     SearchIndexBuilder
 } from "@paperbits/common/publishing";
-import { IBlobStorage, Page, Query } from "@paperbits/common/persistence";
+import { IBlobStorage, Query } from "@paperbits/common/persistence";
 import { IPageService, PageContract } from "@paperbits/common/pages";
 import { ISiteService, SiteSettingsContract } from "@paperbits/common/sites";
 import { Logger } from "@paperbits/common/logging";
@@ -56,24 +55,7 @@ export class AmpPagePublisher implements IPublisher {
             ];
 
             const htmlContent = await this.htmlPagePublisher.renderHtml(page, overridePlugins);
-
-            return minify(htmlContent, {
-                caseSensitive: true,
-                collapseBooleanAttributes: true,
-                collapseInlineTagWhitespace: false,
-                collapseWhitespace: true,
-                html5: true,
-                minifyCSS: true,
-                preserveLineBreaks: false,
-                removeComments: true,
-                removeEmptyAttributes: true,
-                removeOptionalTags: false,
-                removeRedundantAttributes: false,
-                removeScriptTypeAttributes: false,
-                removeStyleLinkTypeAttributes: false,
-                removeTagWhitespace: false,
-                removeAttributeQuotes: false
-            });
+            return htmlContent;
         }
         catch (error) {
             throw new Error(`Unable to render page "${page.title}": ${error.stack || error.message}`);
