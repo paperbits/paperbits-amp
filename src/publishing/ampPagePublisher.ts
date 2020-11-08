@@ -11,6 +11,7 @@ import {
     OpenGraphHtmlPagePublisherPlugin,
     SearchIndexBuilder
 } from "@paperbits/common/publishing";
+import { maxParallelPublisingTasks } from "@paperbits/common/constants";
 import { IBlobStorage, Query } from "@paperbits/common/persistence";
 import { IPageService, PageContract } from "@paperbits/common/pages";
 import { ISiteService, SiteSettingsContract } from "@paperbits/common/sites";
@@ -204,7 +205,7 @@ export class AmpPagePublisher implements IPublisher {
                     tasks.push(() => this.renderAndUpload(siteSettings, page, globalStyleSheet, localeCode));
                 }
 
-                await parallel(tasks, 7);
+                await parallel(tasks, maxParallelPublisingTasks);
 
                 if (pagesOfResults.takeNext) {
                     pagesOfResults = await pagesOfResults.takeNext();
