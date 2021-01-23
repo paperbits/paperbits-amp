@@ -40,7 +40,7 @@ export class PictureViewModelBinder implements ViewModelBinder<PictureModel, Pic
             viewModel.styles(await this.styleCompiler.getStyleModelAsync(model.styles, bindingContext?.styleManager));
         }
 
-        const binding: IWidgetBinding<PictureModel> = {
+        const binding: IWidgetBinding<PictureModel, PictureViewModel> = {
             name: "amp-picture",
             displayName: "Picture (AMP)",
             readonly: bindingContext ? bindingContext.readonly : false,
@@ -48,7 +48,7 @@ export class PictureViewModelBinder implements ViewModelBinder<PictureModel, Pic
             flow: "inline",
             draggable: true,
             editor: "amp-picture-editor",
-            applyChanges: async (changes) => {
+            applyChanges: async () => {
                 await this.modelToViewModel(model, viewModel, bindingContext);
                 this.eventManager.dispatchEvent("onContentUpdate");
             }
