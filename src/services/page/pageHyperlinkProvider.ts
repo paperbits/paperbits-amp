@@ -1,6 +1,4 @@
 import { IHyperlinkProvider } from "@paperbits/common/ui";
-import { HyperlinkModel } from "@paperbits/common/permalinks";
-
 
 export class AmpPageHyperlinkProvider implements IHyperlinkProvider {
     public readonly name: string = "AMP Pages";
@@ -9,9 +7,5 @@ export class AmpPageHyperlinkProvider implements IHyperlinkProvider {
 
     public canHandleHyperlink(contentItemKey: string): boolean {
         return contentItemKey.startsWith("amp-pages/");
-    }
-
-    public getHyperlinkFromResource(hyperlinkModel: HyperlinkModel): HyperlinkModel {
-        return hyperlinkModel;
     }
 }
