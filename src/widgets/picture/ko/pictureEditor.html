@@ -23,8 +23,7 @@
                 <label for="caption" class="form-label">
                     Caption
                     <button class="btn btn-info" type="button" aria-label="Error" aria-haspopup="true"
-                        aria-hidden="true"
-                        data-bind="tooltip: 'An alternate text for an image'"></button>
+                        aria-hidden="true" data-bind="tooltip: 'An alternate text for an image'"></button>
                 </label>
                 <input type="text" id="caption" class="form-control" data-bind="textInput: caption" maxlength="256" />
             </div>
@@ -36,12 +35,11 @@
                         data-bind="tooltip: 'A link to be navigated on click.'"></button>
                 </label>
                 <div class="input-group">
-                    <a href="#" aria-labelledby="linkToLabel" class="form-control" role="button"
-                        data-bind="text: hyperlinkTitle, balloon: { component: { name: 'hyperlink-selector', params: { hyperlink: $component.hyperlink, onChange: $component.onHyperlinkChange } } }">
-                    </a>
-                    <div class="input-group-addon">
+                    <input id="hyperlink" class="form-control" readonly data-bind="value: hyperlinkTitle" />
+                    <button class="btn input-group-btn"
+                        data-bind="balloon: { position: 'right', component: { name: 'hyperlink-selector', params: { hyperlink: $component.hyperlink, onChange: $component.onHyperlinkChange } } }">
                         <i class="paperbits-icon paperbits-link-69-2"></i>
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>
@@ -59,14 +57,15 @@
             <div class="form-group">
                 <label for="appearanceStyle" class="form-label">
                     Appearance
-                    <button class="btn btn-info" type="button" data-bind="tooltip: 'Predefined appearance from style guide.'"></button>
+                    <button class="btn btn-info" type="button"
+                        data-bind="tooltip: 'Predefined appearance from style guide.'"></button>
                 </label>
                 <!-- <div class="input-group">
                     <a href="#" class="form-control" data-bind="text: appearanceStyle() && appearanceStyle().displayName, balloon: { component: { name: 'style-variation-selector', params: { snippetType: 'components/picture', onSelect: $component.onVariationSelected } } }">
                     </a>
                 </div> -->
                 <select id="appearanceStyle" class="form-control"
-                    data-bind="options: appearanceStyles, value: appearanceStyle, optionsText: 'displayName', optionsValue: 'key'"></select> 
+                    data-bind="options: appearanceStyles, value: appearanceStyle, optionsText: 'displayName', optionsValue: 'key'"></select>
             </div>
         </div>
     </div>
