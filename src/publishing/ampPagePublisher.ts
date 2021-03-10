@@ -63,6 +63,20 @@ export class AmpPagePublisher implements IPublisher {
         }
     }
 
+    private getIndexableContent(html: string): string {
+        // const regex = /<main.*>([\s\S]*)<\/main>/g;
+        // const match = regex.exec(html);
+
+        // if (!match || match.length < 1) {
+        //     return null;
+        // }
+
+        // const mainContent = match[1];
+        // return mainContent;
+
+        return html;
+    }
+
     private async renderAndUpload(settings: SiteSettingsContract, page: PageContract, globalStyleSheet: StyleSheet, locale?: string): Promise<void> {
         if (!page.permalink) {
             this.logger.trackEvent("Publishing", { message: `Skipping page with no permalink specified: "${page.title}".` });
@@ -144,7 +158,7 @@ export class AmpPagePublisher implements IPublisher {
             const htmlContent = await this.renderPage(htmlPage);
 
             this.sitemapBuilder.appendPermalink(pagePermalink);
-            this.searchIndexBuilder.appendPage(pagePermalink, htmlPage.title, htmlPage.description, htmlContent);
+            this.searchIndexBuilder.appendHtml(pagePermalink, htmlPage.title, htmlPage.description, this.getIndexableContent(htmlContent));
 
             let permalink = pagePermalink;
 
