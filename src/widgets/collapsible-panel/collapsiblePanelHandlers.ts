@@ -35,6 +35,7 @@ export class CollapsiblePanelHandlers implements IWidgetHandler {
             color: "#9C27B0",
             hoverCommands: [{
                 color: "#607d8b",
+                iconClass: "paperbits-simple-add",
                 position: context.half,
                 tooltip: "Add widget",
                 component: {
@@ -78,6 +79,7 @@ export class CollapsiblePanelHandlers implements IWidgetHandler {
         if (context.model.widgets.length === 0) {
             gridCellContextualEditor.hoverCommands.push({
                 color: "#607d8b",
+                iconClass: "paperbits-simple-add",
                 position: "center",
                 tooltip: "Add widget",
                 component: {
