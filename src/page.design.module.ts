@@ -8,6 +8,7 @@ import { AmpPageService, AmpPageHyperlinkProvider } from "./services/page";
 import { PictureDesignModule } from "./widgets/picture";
 import { CollapsiblePanelDesignModule } from "./widgets/collapsible-panel";
 import { AmpPagePermalinkResolver } from "./pagePermalinkResolver";
+import { PageHyperlinkDetails } from "./workshops/page/ko/pageHyperlinkDetails";
 
 
 export class PageDesignModule implements IInjectorModule {
@@ -16,6 +17,7 @@ export class PageDesignModule implements IInjectorModule {
         injector.bind("ampPagesWorkshop", PagesWorkshop);
         injector.bind("ampPageDetailsWorkshop", PageDetailsWorkshop);
         injector.bind("ampPageSelector", PageSelector);
+        injector.bind("pageHyperlinkDetails", PageHyperlinkDetails);
         injector.bindToCollection("workshopSections", PagesToolButton);
         injector.bind("ampPageService", AmpPageService);
         injector.bindModule(new PictureDesignModule());
