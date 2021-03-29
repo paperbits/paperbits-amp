@@ -24,6 +24,7 @@ import { KnockoutHtmlPagePublisherPlugin } from "@paperbits/core/publishing";
 import { ContentViewModelBinder } from "@paperbits/core/content/ko";
 import { ILayoutService } from "@paperbits/common/layouts";
 import { ILocaleService, LocaleModel } from "@paperbits/common/localization";
+import { PopupHostViewModelBinder } from "@paperbits/core/popup/ko/popupHostViewModelBinder";
 
 
 export class AmpPagePublisher implements IPublisher {
@@ -36,6 +37,7 @@ export class AmpPagePublisher implements IPublisher {
         private readonly styleCompiler: StyleCompiler,
         private readonly logger: Logger,
         private readonly contentViewModelBinder: ContentViewModelBinder,
+        private readonly popupHostViewModelBinder: PopupHostViewModelBinder,
         private readonly layoutService: ILayoutService,
         private readonly sitemapBuilder: SitemapBuilder,
         private readonly searchIndexBuilder: SearchIndexBuilder,
@@ -47,7 +49,7 @@ export class AmpPagePublisher implements IPublisher {
 
         try {
             const overridePlugins = [
-                new KnockoutHtmlPagePublisherPlugin(this.contentViewModelBinder, this.layoutService),
+                new KnockoutHtmlPagePublisherPlugin(this.contentViewModelBinder, this.layoutService, this.popupHostViewModelBinder),
                 new SocialShareDataHtmlPagePublisherPlugin(this.mediaService),
                 new LinkedDataHtmlPagePublisherPlugin(this.siteService),
                 new OpenGraphHtmlPagePublisherPlugin(this.mediaService),
