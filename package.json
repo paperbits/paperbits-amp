@@ -1,6 +1,6 @@
 {
     "name": "@paperbits/amp",
-    "version": "0.1.402",
+    "version": "0.1.403",
     "description": "Paperbits components for building email templates.",
     "author": "Paperbits",
     "license": "Commercial",
@@ -15,9 +15,9 @@
         "url": "https://github.com/paperbits/paperbits-emails/issues"
     },
     "dependencies": {
-        "@paperbits/common": "0.1.402",
-        "@paperbits/core": "0.1.400",
-        "@paperbits/styles": "0.1.400",
+        "@paperbits/common": "0.1.403",
+        "@paperbits/core": "0.1.403",
+        "@paperbits/styles": "0.1.403",
         "await-parallel-limit": "^2.1.0",
         "cheerio": "^0.22.0",
         "css-rules": "^1.0.5",
