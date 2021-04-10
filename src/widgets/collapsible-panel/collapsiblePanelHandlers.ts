@@ -20,7 +20,7 @@ export class CollapsiblePanelHandlers implements IWidgetHandler {
         const widgetOrder: IWidgetOrder = {
             name: "ampCollapsiblePanel",
             displayName: "Collapsible panel",
-            iconClass: "paperbits-menu-34",
+            iconClass: "paperbits-icon paperbits-menu-34",
             requires: ["amp"],
             createModel: async () => {
                 return new CollapsiblePanelModel();
@@ -35,7 +35,7 @@ export class CollapsiblePanelHandlers implements IWidgetHandler {
             color: "#9C27B0",
             hoverCommands: [{
                 color: "#607d8b",
-                iconClass: "paperbits-simple-add",
+                iconClass: "paperbits-icon paperbits-simple-add",
                 position: context.half,
                 tooltip: "Add widget",
                 component: {
@@ -68,7 +68,7 @@ export class CollapsiblePanelHandlers implements IWidgetHandler {
             },
             selectCommands: [{
                 tooltip: "Edit collapsible panel",
-                iconClass: "paperbits-edit-72",
+                iconClass: "paperbits-icon paperbits-edit-72",
                 position: "top right",
                 color: "#607d8b",
                 callback: () => this.viewManager.openWidgetEditor(context.binding)
@@ -79,7 +79,7 @@ export class CollapsiblePanelHandlers implements IWidgetHandler {
         if (context.model.widgets.length === 0) {
             gridCellContextualEditor.hoverCommands.push({
                 color: "#607d8b",
-                iconClass: "paperbits-simple-add",
+                iconClass: "paperbits-icon paperbits-simple-add",
                 position: "center",
                 tooltip: "Add widget",
                 component: {

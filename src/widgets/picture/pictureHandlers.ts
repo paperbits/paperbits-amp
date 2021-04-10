@@ -15,7 +15,7 @@ export class PictureHandlers implements IWidgetHandler, IContentDropHandler {
             name: "amp-picture",
             displayName: widgetDisplayName,
             category: "Media",
-            iconClass: "paperbits-image-2",
+            iconClass: "widget-icon widget-icon-picture",
             requires: ["amp"],
             createModel: async () => {
                 const pictureModel = new PictureModel();
