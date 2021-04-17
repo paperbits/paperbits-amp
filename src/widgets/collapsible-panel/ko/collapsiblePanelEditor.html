@@ -1,8 +1,8 @@
 <div class="form flex-item flex-item-grow" data-bind="scrollable: true">
     <div class="form-group form-group-collapsible">
         <label class="form-label">
-            <a href="#" class="form-group-toggle" title="Toggle section"
-                data-bind="collapse: '#backgroundCollapse'"></a>
+            <a href="#" class="form-group-toggle" title="Toggle section" data-bind="collapse: '#backgroundCollapse'"
+                aria-label="Toggle 'Background' section"></a>
             <b>Background</b>
             <button class="btn btn-info" type="button" data-bind="tooltip: 'Manage background'"></button>
         </label>
@@ -13,5 +13,16 @@
     </div>
 
     <container params="{ container: containerConfig, onUpdate: onContainerChange }"></container>
-    <size-editor params="{ features: 'minMaxWidth', sizeConfig: sizeConfig, onUpdate: onSizeChange }"></size-editor>
+
+    <div class="form-group form-group-collapsible">
+        <label class="form-label">
+            <a href="#" class="form-group-toggle" title="Toggle section" data-bind="collapse: '#sizeCollapse'"
+                aria-label="Toggle 'Size' section"></a>
+            <b>Size</b>
+        </label>
+        <div id="sizeCollapse" class="collapse form-group-collapse">
+            <size-editor params="{ features: 'minMaxWidth', sizeConfig: sizeConfig, onUpdate: onSizeChange }">
+            </size-editor>
+        </div>
+    </div>
 </div>
