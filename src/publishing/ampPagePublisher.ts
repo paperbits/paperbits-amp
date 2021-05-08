@@ -79,7 +79,7 @@ export class AmpPagePublisher implements IPublisher {
         return html;
     }
 
-    private async renderAndUpload(settings: SiteSettingsContract, page: PageContract, globalStyleSheet: StyleSheet, locale?: string): Promise<void> {
+    private async renderAndUpload(settings: SiteSettingsContract, page: PageContract, globalStyleSheet: StyleSheet, locale?: LocaleModel): Promise<void> {
         if (!page.permalink) {
             this.logger.trackEvent("Publishing", { message: `Skipping page with no permalink specified: "${page.title}".` });
             return;
@@ -92,9 +92,9 @@ export class AmpPagePublisher implements IPublisher {
             const siteKeywords = settings?.keywords;
             const siteHostname = settings?.hostname;
             const faviconSourceKey = settings?.faviconSourceKey;
-            const localePrefix = locale ? `/${locale}` : "";
+            const localePrefix = locale ? `/${locale.code}` : "";
             const pagePermalink = `${localePrefix}${page.permalink}`;
-            const pageContent = await this.ampPageService.getPageContent(page.key, locale);
+            const pageContent = await this.ampPageService.getPageContent(page.key, locale?.code);
             const pageUrl = siteHostname
                 ? `https://${settings?.hostname}${pagePermalink}`
                 : pagePermalink;
@@ -109,6 +109,7 @@ export class AmpPagePublisher implements IPublisher {
                 permalink: pagePermalink,
                 url: pageUrl,
                 siteHostName: siteHostname,
+                locale: locale,
                 content: pageContent,
                 author: siteAuthor,
                 template: template,
@@ -124,7 +125,7 @@ export class AmpPagePublisher implements IPublisher {
                     contentItemKey: page.key,
                     styleManager: styleManager,
                     navigationPath: pagePermalink,
-                    locale: locale,
+                    locale: locale?.code,
                     template: {
                         page: {
                             value: pageContent,
@@ -203,22 +204,22 @@ export class AmpPagePublisher implements IPublisher {
     }
 
     private async publishLocalized(locales: LocaleModel[], siteSettings: SiteSettingsContract, globalStyleSheet: StyleSheet): Promise<void> {
-        const defaultLocale = await this.localeService.getDefaultLocale();
+        const defaultLocale = await this.localeService.getDefaultLocaleCode();
 
         for (const locale of locales) {
-            const localeCode = locale.code === defaultLocale
+            const requestedLocale = locale.code === defaultLocale
                 ? null
-                : locale.code;
+                : locale;
 
             const query: Query<PageContract> = Query.from<PageContract>();
-            let pagesOfResults = await this.ampPageService.search(query, localeCode);
+            let pagesOfResults = await this.ampPageService.search(query, requestedLocale?.code);
 
             do {
                 const tasks = [];
                 const pages = pagesOfResults.value;
 
                 for (const page of pages) {
-                    tasks.push(() => this.renderAndUpload(siteSettings, page, globalStyleSheet, localeCode));
+                    tasks.push(() => this.renderAndUpload(siteSettings, page, globalStyleSheet, requestedLocale));
                 }
 
                 await parallel(tasks, maxParallelPublisingTasks);
