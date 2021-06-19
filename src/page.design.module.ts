@@ -17,7 +17,7 @@ export class PageDesignModule implements IInjectorModule {
         injector.bind("ampPagesWorkshop", PagesWorkshop);
         injector.bind("ampPageDetailsWorkshop", PageDetailsWorkshop);
         injector.bind("ampPageSelector", PageSelector);
-        injector.bind("pageHyperlinkDetails", PageHyperlinkDetails);
+        injector.bind("ampPageHyperlinkDetails", PageHyperlinkDetails);
         injector.bindToCollection("workshopSections", PagesToolButton);
         injector.bind("ampPageService", AmpPageService);
         injector.bindModule(new PictureDesignModule());
