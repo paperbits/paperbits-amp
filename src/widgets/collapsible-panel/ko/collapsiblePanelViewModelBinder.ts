@@ -7,6 +7,7 @@ import { Bag } from "@paperbits/common";
 import { PlaceholderViewModel } from "@paperbits/core/placeholder/ko";
 import { ViewModelBinderSelector } from "@paperbits/core/ko";
 import { CollapsiblePanelHandlers } from "..";
+import { ComponentFlow } from "@paperbits/common/editing";
 
 
 export class CollapsiblePanelViewModelBinder implements ViewModelBinder<CollapsiblePanelModel, CollapsiblePanel>  {
@@ -47,7 +48,7 @@ export class CollapsiblePanelViewModelBinder implements ViewModelBinder<Collapsi
             readonly: bindingContext ? bindingContext.readonly : false,
             model: model,
             draggable: true,
-            flow: "inline",
+            flow: ComponentFlow.Inline,
             editor: "amp-collapsible-panel-editor",
             handler: CollapsiblePanelHandlers,
             applyChanges: async () => {

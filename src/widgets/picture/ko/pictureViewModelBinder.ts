@@ -5,7 +5,7 @@ import { EventManager } from "@paperbits/common/events";
 import { StyleCompiler } from "@paperbits/common/styles/styleCompiler";
 import { Bag } from "@paperbits/common";
 import { IPermalinkResolver } from "@paperbits/common/permalinks";
-import { IWidgetBinding } from "@paperbits/common/editing";
+import { ComponentFlow, IWidgetBinding } from "@paperbits/common/editing";
 
 export class PictureViewModelBinder implements ViewModelBinder<PictureModel, PictureViewModel> {
     constructor(
@@ -45,7 +45,7 @@ export class PictureViewModelBinder implements ViewModelBinder<PictureModel, Pic
             displayName: "Picture (AMP)",
             readonly: bindingContext ? bindingContext.readonly : false,
             model: model,
-            flow: "inline",
+            flow: ComponentFlow.Inline,
             draggable: true,
             editor: "amp-picture-editor",
             applyChanges: async () => {
