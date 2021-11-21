@@ -54,7 +54,7 @@ export class PictureHandlers implements IWidgetHandler, IContentDropHandler {
         }
 
         const source = dataTransfer.source;
-        const droppedSourceUrl = URL.createObjectURL(source);
+        const droppedSourceUrl = URL.createObjectURL(<Blob>source);
 
         const getThumbnailPromise = () => new Promise<string>(async (resolve) => {
             resolve(await Utils.readBlobAsDataUrl(<Blob>source));
