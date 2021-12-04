@@ -1,3 +1,4 @@
+import { Size } from "@paperbits/styles/size";
 import * as ko from "knockout";
 
 
@@ -8,15 +9,18 @@ ko.bindingHandlers["ampSize"] = {
         const width = ko.unwrap(config.width);
         const height = ko.unwrap(config.height);
 
+        const parsedWidth = Size.parse(width);
+        const parsedHeight = Size.parse(height);
+
         if (width) {
-            element.setAttribute("width", width);
+            element.setAttribute("width", parsedWidth.value.toString());
         }
         else {
             element.removeAttribute("width");
         }
 
         if (height) {
-            element.setAttribute("height", height);
+            element.setAttribute("height", parsedHeight.value.toString());
         }
         else {
             element.removeAttribute("height");
@@ -24,8 +28,8 @@ ko.bindingHandlers["ampSize"] = {
 
         // Additional styling for design-time.
         if (typeof location === "object") {
-            element.style.width = width ? width + "px" : null;
-            element.style.height = height ? height + "px" : null;
+            element.style.width = parsedWidth.toString();
+            element.style.height = parsedHeight.toString();
         }
     }
 };
