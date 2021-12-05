@@ -1,6 +1,7 @@
 ﻿import * as ko from "knockout";
 import template from "./pictureEditor.html";
-import { MediaContract } from "@paperbits/common/media";
+import * as MediaUtils from "@paperbits/common/media/mediaUtils";
+import { MediaContract, MediaService } from "@paperbits/common/media";
 import { HyperlinkModel, IPermalinkResolver } from "@paperbits/common/permalinks";
 import { Component, OnMounted, Param, Event } from "@paperbits/common/ko/decorators";
 import { BackgroundModel } from "@paperbits/common/widgets/background";
@@ -25,13 +26,14 @@ export class PictureEditor {
     public readonly sizeConfig: ko.Observable<SizeStylePluginConfig>;
     public readonly appearanceStyles: ko.ObservableArray<any>;
     public readonly appearanceStyle: ko.Observable<any>;
+    public readonly mediaFileName: ko.Observable<string>;
 
     private readonly DEFAULT_WIDTH: number = 200;
     private readonly DEFAULT_HEIGHT: number = 200;
 
     constructor(
         private readonly styleService: StyleService,
-        private readonly mediaPermalinkResolver: IPermalinkResolver,
+        private readonly mediaService: MediaService
     ) {
         this.caption = ko.observable<string>();
         this.hyperlink = ko.observable<HyperlinkModel>();
@@ -41,6 +43,7 @@ export class PictureEditor {
         this.sizeConfig = ko.observable();
         this.appearanceStyles = ko.observableArray();
         this.appearanceStyle = ko.observable();
+        this.mediaFileName = ko.observable();
     }
 
     @Param()
@@ -52,12 +55,16 @@ export class PictureEditor {
     @OnMounted()
     public async initialize(): Promise<void> {
         if (this.model.sourceKey) {
-            const background = new BackgroundModel();
-            background.sourceKey = this.model.sourceKey;
-            background.sourceUrl = await this.mediaPermalinkResolver.getUrlByTargetKey(this.model.sourceKey);
-            this.background(background);
+            const media = await this.mediaService.getMediaByKey(this.model.sourceKey);
 
-            this.sourceKey(this.model.sourceKey);
+            if (media) {
+                const background = new BackgroundModel();
+                background.sourceKey = this.model.sourceKey;
+                background.sourceUrl = MediaUtils.getThumbnailUrl(media);
+                this.background(background);
+                this.sourceKey(this.model.sourceKey);
+                this.mediaFileName(media.fileName);
+            }
         }
 
         this.caption(this.model.caption);
@@ -95,7 +102,7 @@ export class PictureEditor {
         this.onChange(this.model);
     }
 
-    public onMediaSelected(media: MediaContract): void {
+    public onMediaSelected(media: any): void {
         if (!media) {
             this.background(null);
             this.sourceKey(null);
@@ -109,6 +116,7 @@ export class PictureEditor {
             background.size = "contain";
             background.position = "center center";
             this.background(background);
+            this.mediaFileName(media.fileName());
 
             this.updateSizeConfigForSelectedMedia(media);
         }
@@ -116,7 +124,7 @@ export class PictureEditor {
         this.applyChanges();
     }
 
-    public updateSizeConfigForSelectedMedia(media: MediaContract): void {
+    public updateSizeConfigForSelectedMedia(media: any): void {
         if (!media.downloadUrl) {
             return;
         }
