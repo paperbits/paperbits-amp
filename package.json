@@ -19,7 +19,6 @@
         "@paperbits/core": "0.1.479",
         "@paperbits/styles": "0.1.479",
         "await-parallel-limit": "^2.1.0",
-        "cheerio": "^0.22.0",
         "css-rules": "^1.0.5",
         "cssom": "^0.4.1",
         "extend": "^3.0.2",
