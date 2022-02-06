@@ -75,7 +75,7 @@ export class PageDetailsWorkshop {
             this.socialShareImage(imageModel);
         }
 
-        const seoSetting = await this.settingsProvider.getSetting<boolean>("enableSeo");
+        const seoSetting = await this.settingsProvider.getSetting<boolean>("features/seo");
 
         if (seoSetting) {
             this.isSeoEnabled(seoSetting);

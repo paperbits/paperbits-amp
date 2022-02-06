@@ -2,7 +2,7 @@ import { Contract } from "@paperbits/common";
 import { HyperlinkContract } from "@paperbits/common/editing";
 import { IPageService, PageContract } from "@paperbits/common/pages";
 import { HyperlinkModel, IPermalinkResolver } from "@paperbits/common/permalinks";
-import { ContentItemContract } from "@paperbits/common/contentItems";
+import { ContentItemContract } from "@paperbits/common/contentModel";
 import { ILocaleService } from "@paperbits/common/localization";
 
 const pagesPath = "amp-pages/";
