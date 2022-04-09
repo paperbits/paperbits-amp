@@ -6,6 +6,7 @@ import { StyleCompiler } from "@paperbits/common/styles/styleCompiler";
 import { Bag } from "@paperbits/common";
 import { IPermalinkResolver } from "@paperbits/common/permalinks";
 import { ComponentFlow, IWidgetBinding } from "@paperbits/common/editing";
+import { PictureHandlers } from "../pictureHandlers";
 
 export class PictureViewModelBinder implements ViewModelBinder<PictureModel, PictureViewModel> {
     constructor(
@@ -46,6 +47,7 @@ export class PictureViewModelBinder implements ViewModelBinder<PictureModel, Pic
             readonly: bindingContext ? bindingContext.readonly : false,
             model: model,
             flow: ComponentFlow.Inline,
+            handler: PictureHandlers,
             draggable: true,
             editor: "amp-picture-editor",
             applyChanges: async () => {
