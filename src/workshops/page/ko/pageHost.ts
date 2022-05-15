@@ -78,6 +78,8 @@ export class PageHost {
         const styleSheet = await this.styleCompiler.getStyleSheet();
         styleManager.setStyleSheet(styleSheet);
 
+        this.viewManager.setActiveLayer("page");
+
         const bindingContext = {
             contentItemKey: pageContract.key,
             styleManager: styleManager,

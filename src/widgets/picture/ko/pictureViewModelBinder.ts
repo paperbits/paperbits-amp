@@ -44,7 +44,7 @@ export class PictureViewModelBinder implements ViewModelBinder<PictureModel, Pic
         const binding: IWidgetBinding<PictureModel, PictureViewModel> = {
             name: "amp-picture",
             displayName: "Picture (AMP)",
-            readonly: bindingContext ? bindingContext.readonly : false,
+            layer: bindingContext?.layer,
             model: model,
             flow: ComponentFlow.Inline,
             handler: PictureHandlers,

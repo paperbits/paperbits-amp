@@ -45,7 +45,7 @@ export class CollapsiblePanelViewModelBinder implements ViewModelBinder<Collapsi
         viewModel["widgetBinding"] = {
             name: "ampCollapiblePanel",
             displayName: "Collapsible panel",
-            readonly: bindingContext ? bindingContext.readonly : false,
+            layer: bindingContext?.layer,
             model: model,
             draggable: true,
             flow: ComponentFlow.Inline,
