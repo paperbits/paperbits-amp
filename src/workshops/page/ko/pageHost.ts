@@ -84,6 +84,7 @@ export class PageHost {
             contentItemKey: pageContract.key,
             styleManager: styleManager,
             navigationPath: route.path,
+            contentType: "page",
             template: {
                 page: {
                     value: pageContentContract,
