@@ -78,13 +78,14 @@ export class PageHost {
         const styleSheet = await this.styleCompiler.getStyleSheet();
         styleManager.setStyleSheet(styleSheet);
 
-        this.viewManager.setActiveLayer("page");
+        const activeLayer = "page";
+        this.viewManager.setActiveLayer(activeLayer);
 
         const bindingContext = {
             contentItemKey: pageContract.key,
             styleManager: styleManager,
             navigationPath: route.path,
-            contentType: "page",
+            activeLayer: activeLayer,
             template: {
                 page: {
                     value: pageContentContract,
