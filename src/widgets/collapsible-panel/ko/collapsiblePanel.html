@@ -1,17 +1,24 @@
-<div id="qqq" class="collapsible collapsible-panel">
+<div class="collapsible collapsible-panel">
     <div class="backdrop"></div>
     <div class="collapsible-content" data-bind="styled: $component.styles">
-        <!-- ko foreach: { data: widgets, as: 'widget'  } -->
+        <!-- ko foreach: { data: widgets, as: 'widget' } -->
+        <!-- ko if: widget.wrapped -->
+        <div data-bind="widget: widget"></div>
+        <!-- /ko -->
+        <!-- ko ifnot: widget.wrapped -->
         <!-- ko widget: widget -->
         <!-- /ko -->
         <!-- /ko -->
+        <!-- /ko -->
 
-        <button class="collapsible-panel-close" aria-label="Toggle" data-toggle="modal" on="tap:qqq.toggleClass(class=expanded)">
+        <button class="collapsible-panel-close" aria-label="Toggle" data-toggle="modal"
+            on="tap:qqq.toggleClass(class=expanded)">
             <i class="icon-emb icon-emb-simple-remove"></i>
         </button>
     </div>
 
-    <button class="collapsible-panel-open" aria-label="Toggle" data-toggle="modal" on="tap:qqq.toggleClass(class=expanded)">
+    <button class="collapsible-panel-open" aria-label="Toggle" data-toggle="modal"
+        on="tap:qqq.toggleClass(class=expanded)">
         <i class="icon-emb icon-emb-menu-8"></i>
     </button>
 </div>
