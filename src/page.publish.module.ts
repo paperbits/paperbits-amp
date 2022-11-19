@@ -8,10 +8,9 @@ import { AmpPagePermalinkResolver } from "./pagePermalinkResolver";
 
 export class PagePublishModule implements IInjectorModule {
     public register(injector: IInjector): void {
-        injector.bindToCollection("publishers", AmpPagePublisher);
-        injector.bind("ampPageService", AmpPageService);
-        injector.bindToCollection("permalinkResolvers", AmpPagePermalinkResolver);
-
+        injector.bindSingleton("ampPageService", AmpPageService);
+        injector.bindToCollectionAsSingletone("publishers", AmpPagePublisher);
+        injector.bindToCollectionAsSingletone("permalinkResolvers", AmpPagePermalinkResolver);
         injector.bindModule(new PicturePublishModule());
         injector.bindModule(new CollapsiblePanelPublishModule());
     }

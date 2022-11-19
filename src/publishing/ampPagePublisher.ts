@@ -9,7 +9,8 @@ import {
     SocialShareDataHtmlPagePublisherPlugin,
     LinkedDataHtmlPagePublisherPlugin,
     OpenGraphHtmlPagePublisherPlugin,
-    SearchIndexBuilder
+    SearchIndexBuilder,
+    HtmlDocumentProvider
 } from "@paperbits/common/publishing";
 import { maxParallelPublisingTasks } from "@paperbits/common/constants";
 import { IBlobStorage, Query } from "@paperbits/common/persistence";
@@ -41,7 +42,8 @@ export class AmpPagePublisher implements IPublisher {
         private readonly layoutService: ILayoutService,
         private readonly sitemapBuilder: SitemapBuilder,
         private readonly searchIndexBuilder: SearchIndexBuilder,
-        private readonly localeService: ILocaleService
+        private readonly localeService: ILocaleService,
+        private readonly htmlDocumentProvider: HtmlDocumentProvider,
     ) { }
 
     public async renderPage(page: HtmlPage): Promise<string> {
@@ -49,7 +51,7 @@ export class AmpPagePublisher implements IPublisher {
 
         try {
             const overridePlugins = [
-                new KnockoutHtmlPagePublisherPlugin(this.contentViewModelBinder, this.layoutService, this.popupHostViewModelBinder),
+                new KnockoutHtmlPagePublisherPlugin(this.htmlDocumentProvider, this.contentViewModelBinder, this.layoutService, this.popupHostViewModelBinder),
                 new SocialShareDataHtmlPagePublisherPlugin(this.mediaService),
                 new LinkedDataHtmlPagePublisherPlugin(this.siteService),
                 new OpenGraphHtmlPagePublisherPlugin(this.mediaService),
