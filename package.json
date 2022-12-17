@@ -22,7 +22,6 @@
         "css-rules": "^1.0.5",
         "cssom": "^0.4.1",
         "extend": "^3.0.2",
-        "extract-css": "^1.2.4",
         "flatten": "^1.0.3",
         "html-minifier-terser": "^5.0.4",
         "inline-css": "^2.5.0",
