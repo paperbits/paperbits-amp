@@ -4,7 +4,7 @@ import { CollapsiblePanelModel } from "../collapsiblePanelModel";
 import { EventManager, Events } from "@paperbits/common/events";
 import { StyleCompiler } from "@paperbits/common/styles";
 import { Bag } from "@paperbits/common";
-import { PlaceholderViewModel } from "@paperbits/core/placeholder/ko";
+import { Placeholder } from "@paperbits/core/placeholder/ko";
 import { ViewModelBinderSelector } from "@paperbits/core/ko";
 import { CollapsiblePanelHandlers } from "..";
 import { ComponentFlow, IWidgetBinding } from "@paperbits/common/editing";
@@ -32,7 +32,7 @@ export class CollapsiblePanelViewModelBinder implements ViewModelBinder<Collapsi
         }
 
         if (widgetViewModels.length === 0) {
-            widgetViewModels.push(new PlaceholderViewModel("Collapsible panel content"));
+            widgetViewModels.push(new Placeholder("Collapsible panel content"));
         }
 
         if (model.styles) {
