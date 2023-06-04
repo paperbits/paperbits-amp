@@ -40,7 +40,7 @@ export class PictureEditor {
         this.sourceKey = ko.observable<string>();
         this.background = ko.observable();
         this.hyperlinkTitle = ko.computed<string>(() => this.hyperlink() ? this.hyperlink().title : "Add a link...");
-        this.sizeConfig = ko.observable();
+        this.sizeConfig = ko.observable<SizeStylePluginConfig>();
         this.appearanceStyles = ko.observableArray();
         this.appearanceStyle = ko.observable();
         this.mediaFileName = ko.observable();
