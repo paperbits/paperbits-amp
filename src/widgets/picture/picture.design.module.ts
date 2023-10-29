@@ -12,7 +12,7 @@ export class PictureDesignModule implements IInjectorModule {
         const styleGroup: IStyleGroup = { 
             key: "picture",
             name: "components_picture", 
-            groupName: "Pictures",
+            groupName: "Picture",
             styleTemplate: `<img src="https://cdn.paperbits.io/images/placeholder-340x190.jpg" alt="Picture" data-bind="stylePreview: variation" width="340px" height="190px" />`
         };
 
