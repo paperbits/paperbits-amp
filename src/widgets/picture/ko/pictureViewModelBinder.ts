@@ -5,7 +5,7 @@ import { EventManager, Events } from "@paperbits/common/events";
 import { StyleCompiler } from "@paperbits/common/styles/styleCompiler";
 import { Bag } from "@paperbits/common";
 import { IPermalinkResolver } from "@paperbits/common/permalinks";
-import { ComponentFlow, IWidgetBinding } from "@paperbits/common/editing";
+import { IWidgetBinding } from "@paperbits/common/editing";
 import { PictureHandlers } from "../pictureHandlers";
 
 export class PictureViewModelBinder implements ViewModelBinder<PictureModel, PictureViewModel> {
