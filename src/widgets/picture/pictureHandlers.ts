@@ -7,11 +7,11 @@ const pictureIconUrl = "data:image/svg+xml;base64,PHN2ZyBjbGFzcz0ibmMtaWNvbiBvdX
 const defaultLayout = "noframe";
 const widgetDisplayName = "Picture";
 
-export class PictureHandlers implements IWidgetHandler, IContentDropHandler {
+export class PictureHandlers implements IWidgetHandler<PictureModel>, IContentDropHandler {
     private static readonly imageFileExtensions = [".jpg", ".jpeg", ".png", ".svg", ".gif"];
 
-    private async getWidgetOrderByConfig(sourceUrl: string, caption: string): Promise<IWidgetOrder> {
-        const widgetOrder: IWidgetOrder = {
+    private async getWidgetOrderByConfig(sourceUrl: string, caption: string): Promise<IWidgetOrder<PictureModel>> {
+        const widgetOrder: IWidgetOrder<PictureModel> = {
             name: "amp-picture",
             displayName: widgetDisplayName,
             category: "Media",
@@ -29,7 +29,7 @@ export class PictureHandlers implements IWidgetHandler, IContentDropHandler {
         return widgetOrder;
     }
 
-    public async getWidgetOrder(): Promise<IWidgetOrder> {
+    public async getWidgetOrder(): Promise<IWidgetOrder<PictureModel>> {
         return await this.getWidgetOrderByConfig(null, widgetDisplayName);
     }
 
@@ -48,7 +48,7 @@ export class PictureHandlers implements IWidgetHandler, IContentDropHandler {
     }
 
     public getContentDescriptorFromDataTransfer(dataTransfer: IDataTransfer): IContentDescriptor {
-        if (!dataTransfer.name || !PictureHandlers.imageFileExtensions.some(e => 
+        if (!dataTransfer.name || !PictureHandlers.imageFileExtensions.some(e =>
             dataTransfer.name.toLowerCase().endsWith(e.toLowerCase()))) {
             return null;
         }
