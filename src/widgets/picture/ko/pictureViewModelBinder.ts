@@ -7,6 +7,7 @@ import { Bag } from "@paperbits/common";
 import { IPermalinkResolver } from "@paperbits/common/permalinks";
 import { IWidgetBinding } from "@paperbits/common/editing";
 import { PictureHandlers } from "../pictureHandlers";
+import { ComponentFlow } from "@paperbits/common/components";
 
 export class PictureViewModelBinder implements ViewModelBinder<PictureModel, PictureViewModel> {
     constructor(

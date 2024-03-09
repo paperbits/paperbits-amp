@@ -22,6 +22,7 @@ import { KnockoutHtmlPagePublisherPlugin } from "@paperbits/core/publishing";
 import { PagePublisher } from "@paperbits/core/publishing/pagePublisher";
 import { AmpAnalyticsHtmlPagePublisherPlugin } from "./ampAnalyticsPlugin";
 import { AmpStylesheetPublisherPlugin } from "./ampStylesheetPlugin";
+import { ISettingsProvider } from "@paperbits/common/configuration";
 
 
 export class AmpPagePublisher extends PagePublisher {
@@ -32,6 +33,7 @@ export class AmpPagePublisher extends PagePublisher {
         protected readonly outputBlobStorage: IBlobStorage,
         protected readonly htmlPagePublisher: HtmlPagePublisher,
         protected readonly styleCompiler: StyleCompiler,
+        protected readonly settingsProvider: ISettingsProvider,
         protected readonly logger: Logger,
         protected readonly contentViewModelBinder: ContentViewModelBinder,
         protected readonly popupHostViewModelBinder: PopupHostViewModelBinder,
@@ -51,6 +53,7 @@ export class AmpPagePublisher extends PagePublisher {
             localeService,
             sitemapBuilder,
             searchIndexBuilder,
+            settingsProvider,
             logger
         );
     }

@@ -8,6 +8,7 @@ import { Placeholder } from "@paperbits/core/placeholder/ko";
 import { ViewModelBinderSelector } from "@paperbits/core/ko";
 import { CollapsiblePanelHandlers } from "..";
 import { IWidgetBinding } from "@paperbits/common/editing";
+import { ComponentFlow } from "@paperbits/common/components";
 
 
 export class CollapsiblePanelViewModelBinder implements ViewModelBinder<CollapsiblePanelModel, CollapsiblePanel>  {
