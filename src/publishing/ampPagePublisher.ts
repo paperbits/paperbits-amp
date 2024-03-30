@@ -10,7 +10,6 @@ import {
     HtmlPagePublisher,
     LinkedDataHtmlPagePublisherPlugin,
     OpenGraphHtmlPagePublisherPlugin,
-    SearchIndexBuilder,
     SitemapBuilder,
     SocialShareDataHtmlPagePublisherPlugin
 } from "@paperbits/common/publishing";
@@ -23,6 +22,7 @@ import { PagePublisher } from "@paperbits/core/publishing/pagePublisher";
 import { AmpAnalyticsHtmlPagePublisherPlugin } from "./ampAnalyticsPlugin";
 import { AmpStylesheetPublisherPlugin } from "./ampStylesheetPlugin";
 import { ISettingsProvider } from "@paperbits/common/configuration";
+import { SearchIndexBuilder } from "@paperbits/common/search";
 
 
 export class AmpPagePublisher extends PagePublisher {
